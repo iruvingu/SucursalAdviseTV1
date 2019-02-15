@@ -37,7 +37,11 @@ public class MainCentralFragment extends Fragment {
         Timer timer = new Timer();
         timer.schedule(new MyTimerTask(), 2000, 4000);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_central, container, false);
+        View root = inflater.inflate(R.layout.fragment_main_central, container, false);
+
+
+
+        return root;
     }
 
     public class MyTimerTask extends TimerTask {
