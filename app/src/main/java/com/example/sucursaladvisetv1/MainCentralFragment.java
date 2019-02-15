@@ -31,15 +31,14 @@ public class MainCentralFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        viewPager = (ViewPager) viewPager.findViewById(R.id.view_pager);
+        View root = inflater.inflate(R.layout.fragment_main_central, container, false);
+
+        viewPager = (ViewPager) root.findViewById(R.id.view_pager);
         adapter = new CustomSwipeAadapter(getActivity());
         viewPager.setAdapter(adapter);
         Timer timer = new Timer();
         timer.schedule(new MyTimerTask(), 2000, 4000);
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_main_central, container, false);
-
-
 
         return root;
     }
