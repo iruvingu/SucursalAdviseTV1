@@ -6,7 +6,9 @@
     <color name="White">#FFFFFF</color>
     <color name="FootFirst">#FFA7A7</color>
     <color name="FootEnd">#FD6B6B</color>
-    <color name="HeadFirst">#DFD2D2</color>
+    <color name="HeadFirst">#FF5F6D</color>
+    <color name="HeadEnd">#FFC371</color>
     <color name="FootText">#300000</color>
     <color name="Black">#000000</color>
+
 </resources>
