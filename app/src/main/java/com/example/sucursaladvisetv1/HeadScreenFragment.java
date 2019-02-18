@@ -79,7 +79,7 @@ public class HeadScreenFragment extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String nombreSucursal = (String) dataSnapshot.getValue();
-                    sucursalNameTextView.setText("" + nombreSucursal);
+                    sucursalNameTextView.setText(R.string.bienvenido + " " + nombreSucursal);
                 }
 
                 @Override
