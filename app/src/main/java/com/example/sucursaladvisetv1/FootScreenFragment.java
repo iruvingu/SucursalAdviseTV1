@@ -45,7 +45,7 @@ public class FootScreenFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     String value = "";
                     for (DataSnapshot string : dataSnapshot.getChildren()){
-                        value += string.getValue(String.class) + "                         ";
+                        value += "·" + string.getValue(String.class) + "·" + "                         ";
 
                     }
 

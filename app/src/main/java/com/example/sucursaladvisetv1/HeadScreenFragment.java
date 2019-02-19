@@ -81,7 +81,6 @@ public class HeadScreenFragment extends Fragment {
                     String nombreSucursal = (String) dataSnapshot.getValue();
                     sucursalNameTextView.setText(getString(R.string.bienvenida) + " " + nombreSucursal);
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Log.e("DatabaseError","No hay datos en la rama" + databaseError.getCode());
