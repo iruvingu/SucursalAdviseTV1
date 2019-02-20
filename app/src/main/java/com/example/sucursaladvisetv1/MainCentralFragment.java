@@ -4,21 +4,30 @@ package com.example.sucursaladvisetv1;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -28,13 +37,19 @@ import java.util.TimerTask;
  */
 public class MainCentralFragment extends Fragment {
 
-    ViewPager viewPager;
-    CustomSwipeAadapter adapter;
+    private ViewPager viewPager;
+    private ProgressBar progressBar;
+    private CustomSwipeAadapter adapter;
+    private VideoView videoView;
     private Context context;
     private String videoURL;
 
-    //Firebase
+    //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    //Firebase Storage
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+
 
     public MainCentralFragment() {
         // Required empty public constructor
@@ -48,25 +63,43 @@ public class MainCentralFragment extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
-        viewPager = (ViewPager) root.findViewById(R.id.view_pager);
-        VideoView vidView = (VideoView)root.findViewById(R.id.myVideo);
+        viewPager = root.findViewById(R.id.view_pager);
+        videoView = root.findViewById(R.id.myVideo);
+        progressBar = root.findViewById(R.id.progessBar);
 
         //Datos Firebase
         try{
-            DatabaseReference VideoRef = database.getReference("AppMedia/videos/video1/url");
+            StorageReference storageReference =
+                    storage.getReference("media/videos/video_financiera.mp4");
 
-            VideoRef.addValueEventListener(new ValueEventListener() {
+            final File localFile = File.createTempFile("video", "mp4");
+
+            storageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    videoURL = (String) dataSnapshot.getValue();
-                    Log.e("VALUE", "" + videoURL);
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    //Local File has been created
+                    String path = localFile.getPath();
+
+                    Uri uri = Uri.parse(path);
+
+                    videoView.setVideoURI(uri);
+
+                    videoView.start();
                 }
-
+            }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("DatabaseError","No hay datos en la rama" + databaseError.getCode());
+                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    //Handle the progress download
+                    progressBar.setVisibility(View.VISIBLE);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Handle any errors
                 }
             });
+
+
         }catch (Exception e){
             Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
         }
@@ -78,11 +111,7 @@ public class MainCentralFragment extends Fragment {
         timer.schedule(new MyTimerTask(), 2000, 4000);
 
         //Direccion remota de dominio publico aqui tendra q ir nuestra direccion de firebase
-        String vidAddress = "https://archive.org/download/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
-        Uri vidUri = Uri.parse(vidAddress);
 
-        vidView.setVideoURI(vidUri);
-        vidView.start();
 
         return root;
     }
