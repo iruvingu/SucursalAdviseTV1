@@ -38,18 +38,15 @@ import java.util.TimerTask;
 public class MainCentralFragment extends Fragment {
 
     private ViewPager viewPager;
-    private ProgressBar progressBar;
     private CustomSwipeAadapter adapter;
     private VideoView videoView;
     private Context context;
     private String videoURL;
 
+    private Boolean isPlaying = false;
+
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-    //Firebase Storage
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-
 
     public MainCentralFragment() {
         // Required empty public constructor
@@ -65,44 +62,43 @@ public class MainCentralFragment extends Fragment {
 
         viewPager = root.findViewById(R.id.view_pager);
         videoView = root.findViewById(R.id.myVideo);
-        progressBar = root.findViewById(R.id.progessBar);
 
+        String vidAddress = "https://archive.org/download/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
+
+        String videoUri = "https://firebasestorage.googleapis.com/v0/b/infosucursaltv.appspot.com/o/media%2Fvideos%2Fvideo_financiera.mp4?alt=media&token=68ebb743-f190-4604-a533-29d3e5a09715";
+
+        // Uri vidUri = Uri.parse(videoUri);
+
+//        videoView.setVideoURI(vidUri);
+//        videoView.requestFocus();
+//        videoView.start();
         //Datos Firebase
+
         try{
-            StorageReference storageReference =
-                    storage.getReference("media/videos/video_financiera.mp4");
 
-            final File localFile = File.createTempFile("video", "mp4");
+            DatabaseReference videoRef = database.getReference("AppMedia/videos/video1/url");
 
-            storageReference.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            videoRef.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    //Local File has been created
-                    String path = localFile.getPath();
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Toast.makeText(getContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
+                    Uri vidUri = Uri.parse(String.valueOf(dataSnapshot.getValue()));
 
-                    Uri uri = Uri.parse(path);
-
-                    videoView.setVideoURI(uri);
-
+                    videoView.setVideoURI(vidUri);
+                    videoView.requestFocus();
                     videoView.start();
                 }
-            }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+
                 @Override
-                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    //Handle the progress download
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    // Handle any errors
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.v("ErrorBD", "No hay DAtos");
                 }
             });
-
 
         }catch (Exception e){
             Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
         }
+
 
         viewPager.setVisibility(View.GONE);
         adapter = new CustomSwipeAadapter(getActivity());
