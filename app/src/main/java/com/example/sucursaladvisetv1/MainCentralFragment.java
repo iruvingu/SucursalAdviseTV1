@@ -2,6 +2,7 @@ package com.example.sucursaladvisetv1;
 
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -40,10 +43,15 @@ public class MainCentralFragment extends Fragment {
     private ViewPager viewPager;
     private CustomSwipeAadapter adapter;
     private VideoView videoView;
+    private Button playButton;
+    private TextView currentTimeTv, durationTimeTv;
+    private ProgressBar progressVideoBar;
+    ProgressBar progressBar;
     private Context context;
     private String videoURL;
 
-    private Boolean isPlaying = false;
+    Boolean isPlaying;
+    int current = 0, duration = 0;
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -57,54 +65,126 @@ public class MainCentralFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        isPlaying = false;
+
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
-        viewPager = root.findViewById(R.id.view_pager);
+        // viewPager = root.findViewById(R.id.view_pager);
         videoView = root.findViewById(R.id.myVideo);
+        progressBar = root.findViewById(R.id.bufferProgressBar);
+        playButton = root.findViewById(R.id.playButton);
+        currentTimeTv = root.findViewById(R.id.currentTimeTv);
+        durationTimeTv = root.findViewById(R.id.durationTimerTv);
+        progressVideoBar = root.findViewById(R.id.progressVideoPb);
 
         String vidAddress = "https://archive.org/download/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
 
         String videoUri = "https://firebasestorage.googleapis.com/v0/b/infosucursaltv.appspot.com/o/media%2Fvideos%2Fvideo_financiera.mp4?alt=media&token=68ebb743-f190-4604-a533-29d3e5a09715";
 
-        // Uri vidUri = Uri.parse(videoUri);
+         Uri vidUri = Uri.parse(videoUri);
 
-//        videoView.setVideoURI(vidUri);
-//        videoView.requestFocus();
-//        videoView.start();
+        videoView.setVideoURI(vidUri);
+        videoView.requestFocus();
+
+        //This method tell is video is buffering or if the video buffering stopped
+        videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(MediaPlayer mp, int what, int extra) {
+
+                if (what == mp.MEDIA_INFO_BUFFERING_START) {
+
+                    progressBar.setVisibility(View.VISIBLE);
+
+                } else if(what == mp.MEDIA_INFO_BUFFERING_END) {
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+
+                return false;
+            }
+        });
+
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                duration = mp.getDuration() / 1000;
+                String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
+                durationTimeTv.setText(durationString);
+            }
+        });
+
+        videoView.start();
+
+        isPlaying = true;
+
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPlaying) {
+                    videoView.pause();
+                    isPlaying = false;
+                    playButton.setText("Play");
+                } else {
+                    videoView.start();
+                    isPlaying = true;
+                    playButton.setText("Pause");
+                }
+            }
+        });
+
         //Datos Firebase
 
-        try{
+//        try{
+//
+//            DatabaseReference videoRef = database.getReference("AppMedia/videos/video1/url");
+//
+//            videoRef.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                    Uri vidUri = Uri.parse(String.valueOf(dataSnapshot.getValue()));
+//
+//                    videoView.setVideoURI(vidUri);
+//                    videoView.requestFocus();
+//
+//                    //This method tell is video is buffering or if the video buffering stopped
+//                    videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+//                        @Override
+//                        public boolean onInfo(MediaPlayer mp, int what, int extra) {
+//
+//                            if (what == mp.MEDIA_INFO_BUFFERING_START) {
+//
+//                                progressBar.setVisibility(View.VISIBLE);
+//
+//                            } else if(what == mp.MEDIA_INFO_BUFFERING_END) {
+//
+//                                progressBar.setVisibility(View.INVISIBLE);
+//                            }
+//
+//                            return false;
+//                        }
+//                    });
+//
+//                    videoView.start();
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                    Log.v("ErrorBD", "No hay DAtos");
+//                }
+//            });
+//
+//        }catch (Exception e){
+//            Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
+//        }
 
-            DatabaseReference videoRef = database.getReference("AppMedia/videos/video1/url");
 
-            videoRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Toast.makeText(getContext(), dataSnapshot.toString(), Toast.LENGTH_LONG).show();
-                    Uri vidUri = Uri.parse(String.valueOf(dataSnapshot.getValue()));
-
-                    videoView.setVideoURI(vidUri);
-                    videoView.requestFocus();
-                    videoView.start();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.v("ErrorBD", "No hay DAtos");
-                }
-            });
-
-        }catch (Exception e){
-            Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
-        }
-
-
-        viewPager.setVisibility(View.GONE);
-        adapter = new CustomSwipeAadapter(getActivity());
-        viewPager.setAdapter(adapter);
-        Timer timer = new Timer();
-        timer.schedule(new MyTimerTask(), 2000, 4000);
+//        viewPager.setVisibility(View.GONE);
+//        adapter = new CustomSwipeAadapter(getActivity());
+//        viewPager.setAdapter(adapter);
+//        Timer timer = new Timer();
+//        timer.schedule(new MyTimerTask(), 2000, 4000);
 
         //Direccion remota de dominio publico aqui tendra q ir nuestra direccion de firebase
 
