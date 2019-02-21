@@ -2,8 +2,10 @@ package com.example.sucursaladvisetv1;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -78,6 +80,8 @@ public class MainCentralFragment extends Fragment {
         durationTimeTv = root.findViewById(R.id.durationTimerTv);
         progressVideoBar = root.findViewById(R.id.progressVideoPb);
 
+        progressVideoBar.setMax(100);
+
         String vidAddress = "https://archive.org/download/ksnn_compilation_master_the_internet/ksnn_compilation_master_the_internet_512kb.mp4";
 
         String videoUri = "https://firebasestorage.googleapis.com/v0/b/infosucursaltv.appspot.com/o/media%2Fvideos%2Fvideo_financiera.mp4?alt=media&token=68ebb743-f190-4604-a533-29d3e5a09715";
@@ -117,6 +121,8 @@ public class MainCentralFragment extends Fragment {
         videoView.start();
 
         isPlaying = true;
+
+        new VideoProgress().execute();
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +196,50 @@ public class MainCentralFragment extends Fragment {
 
 
         return root;
+    }
+
+    public  class VideoProgress extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            do {
+
+                current = videoView.getCurrentPosition() / 1000;
+
+                try {
+
+                    int currentPercent = current * 100 / duration;
+                    publishProgress(currentPercent);
+
+                } catch (Exception e) {
+
+                }
+
+            } while (progressVideoBar.getProgress() <= 100);
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+            try {
+
+                int currentPercent = values[0] * 100 / duration;
+
+                progressVideoBar.setProgress(currentPercent);
+
+                String currentString = String.format("%02d:%02d", values[0] / 60, values[0] % 60);
+
+                currentTimeTv.setText(currentString);
+            } catch (Exception e) {
+
+            }
+
+
+        }
     }
 
     public class MyTimerTask extends TimerTask {
