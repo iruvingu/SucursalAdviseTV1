@@ -67,9 +67,6 @@ public class FootScreenFragment extends Fragment {
             Toast.makeText(getContext(), "Problemas con el servidor", Toast.LENGTH_SHORT).show();
         }
 
-
-
-
         return root;
     }
 

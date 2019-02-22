@@ -74,9 +74,8 @@ public class MainCentralFragment extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
-        // viewPager = root.findViewById(R.id.view_pager);
-//        videoView = root.findViewById(R.id.myVideo);
-//        progressBar = root.findViewById(R.id.bufferProgressBar);
+        viewPager = root.findViewById(R.id.view_pager);
+        videoView = root.findViewById(R.id.myVideo);
 
         DatabaseReference imageReference = database.getReference("AppMedia/imagenes");
 
@@ -116,18 +115,17 @@ public class MainCentralFragment extends Fragment {
         videoView.setVideoURI(vidUri);
         videoView.requestFocus();
 
-        //This method tell is video is buffering or if the video buffering stopped
         videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
                 String mediaPlayerString = mp.toString();
                 String whatString = String.valueOf(what);
                 if (what == mp.MEDIA_INFO_BUFFERING_START) {
-                    Toast.makeText(getContext(), "BUFFERING VIDEO START", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "BUFFER START", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.VISIBLE);
 
                 } else if(what == mp.MEDIA_INFO_BUFFERING_END) {
-                    Toast.makeText(getContext(), "END BUFFER", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "BUFFER END", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.INVISIBLE);
                 }
 
@@ -135,6 +133,15 @@ public class MainCentralFragment extends Fragment {
             }
         });
 
+
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                duration = mp.getDuration() / 1000;
+                String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
+                durationTimeTv.setText(durationString);
+            }
+        });
 
         videoView.start();*/
 
@@ -185,8 +192,8 @@ public class MainCentralFragment extends Fragment {
 //        }
 
 
-        viewPager.setVisibility(View.GONE);
-        adapter = new CustomSwipeAadapter(getActivity(),imageUrlList);
+        videoView.setVisibility(View.GONE);
+        adapter = new CustomSwipeAadapter(getActivity());
         viewPager.setAdapter(adapter);
         Timer timer = new Timer();
         timer.schedule(new MyTimerTask(), 2000, 4000);
