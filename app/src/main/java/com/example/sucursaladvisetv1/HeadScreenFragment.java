@@ -2,6 +2,8 @@ package com.example.sucursaladvisetv1;
 
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -27,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -38,8 +41,8 @@ public class HeadScreenFragment extends Fragment {
 
     private TextView dateTextView, hourTv, sucursalNameTextView;
 
-    //Calendario para obtener fecha & hora
-    public final Date currentTime = Calendar.getInstance().getTime();
+    // A class instance
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     //Firebase
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -60,15 +63,36 @@ public class HeadScreenFragment extends Fragment {
         hourTv = root.findViewById(R.id.hourView);
         sucursalNameTextView = root.findViewById(R.id.SucursalId);
 
-        //Datos para fecha
-        SimpleDateFormat date_sdf = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat hour_sdf = new SimpleDateFormat("HH:mm a");
+        //Datos para fecha y hora
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                //Calendario para obtener fecha & hora
+                                Date currentTime = Calendar.getInstance().getTime();
+                                SimpleDateFormat date_sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                SimpleDateFormat hour_sdf = new SimpleDateFormat("HH:mm a");
 
-        String currentDate = date_sdf.format(currentTime);
-        String currentHour = hour_sdf.format(currentTime);
+                                String currentDate = date_sdf.format(currentTime);
+                                String currentHour = hour_sdf.format(currentTime);
 
-        dateTextView.setText(currentDate);
-        hourTv.setText(currentHour);
+                                dateTextView.setText(currentDate);
+                                hourTv.setText(currentHour);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                    Log.v("InterruptedException", e.getMessage());
+                }
+            }
+        };
+
+        thread.start();
 
         //Datos de Sucursal Firebase
         try {

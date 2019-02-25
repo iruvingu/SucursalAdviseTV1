@@ -75,7 +75,6 @@ public class CustomSwipeAadapter extends PagerAdapter {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     try{
-                        //List<String> urlImages = new ArrayList<>();
                         for (DataSnapshot getImagesName : dataSnapshot.getChildren()){
                             for (DataSnapshot getUrl : getImagesName.getChildren()){
                                 switch (getUrl.getKey()){
