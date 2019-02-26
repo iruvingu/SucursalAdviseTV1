@@ -100,89 +100,42 @@ public class MainCentralFragment extends Fragment {
         viewPager = root.findViewById(R.id.view_pager);
         videoView = root.findViewById(R.id.myVideo);
 
+        // Datos Firebase
 
-        /*String videoUri = "https://firebasestorage.googleapis.com/v0/b/infosucursaltv.appspot.com/o/media%2Fvideos%2Fvideo_financiera.mp4?alt=media&token=68ebb743-f190-4604-a533-29d3e5a09715";
+        try{
 
-         Uri vidUri = Uri.parse(videoUri);
+            DatabaseReference videoRef = database.getReference("AppMedia/videos/video1/url");
 
-        videoView.setVideoURI(vidUri);
-        videoView.requestFocus();
+            videoRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-        videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                String mediaPlayerString = mp.toString();
-                String whatString = String.valueOf(what);
-                if (what == mp.MEDIA_INFO_BUFFERING_START) {
-                    Toast.makeText(getContext(), "BUFFER START", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.VISIBLE);
+                    Uri vidUri = Uri.parse(String.valueOf(dataSnapshot.getValue()));
 
-                } else if(what == mp.MEDIA_INFO_BUFFERING_END) {
-                    Toast.makeText(getContext(), "BUFFER END", Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
+                    videoView.setVideoURI(vidUri);
+                    videoView.requestFocus();
+
+                    // Get the video's duration
+                    videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            duration = mp.getDuration() / 1000;
+                            String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
+                        }
+                    });
+
+                    videoView.start();
                 }
 
-                return false;
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.v("ErrorBD", "No hay DAtos");
+                }
+            });
 
-
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                duration = mp.getDuration() / 1000;
-                String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
-                durationTimeTv.setText(durationString);
-            }
-        });
-
-        videoView.start();*/
-
-        //Datos Firebase
-
-//        try{
-//
-//            DatabaseReference videoRef = database.getReference("AppMedia/videos/video1/url");
-//
-//            videoRef.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//
-//                    Uri vidUri = Uri.parse(String.valueOf(dataSnapshot.getValue()));
-//
-//                    videoView.setVideoURI(vidUri);
-//                    videoView.requestFocus();
-//
-//                    //This method tell is video is buffering or if the video buffering stopped
-//                    videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-//                        @Override
-//                        public boolean onInfo(MediaPlayer mp, int what, int extra) {
-//
-//                            if (what == mp.MEDIA_INFO_BUFFERING_START) {
-//
-//                                progressBar.setVisibility(View.VISIBLE);
-//
-//                            } else if(what == mp.MEDIA_INFO_BUFFERING_END) {
-//
-//                                progressBar.setVisibility(View.INVISIBLE);
-//                            }
-//
-//                            return false;
-//                        }
-//                    });
-//
-//                    videoView.start();
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//                    Log.v("ErrorBD", "No hay DAtos");
-//                }
-//            });
-//
-//        }catch (Exception e){
-//            Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
-//        }
+        }catch (Exception e){
+            Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
+        }
 
         //View Pager
         videoView.setVisibility(View.GONE);
