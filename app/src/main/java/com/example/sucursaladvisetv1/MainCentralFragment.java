@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -56,6 +57,9 @@ public class MainCentralFragment extends Fragment {
     private VideoView videoView;
     ProgressBar progressBar;
     private Context context;
+    private Handler handler;
+    private int delay = 5000; //milliseconds
+    private int page = 0;
 
     List<String> imageUrlList = new ArrayList<String>();
 
@@ -64,6 +68,19 @@ public class MainCentralFragment extends Fragment {
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    //Runable
+    Runnable runnable = new Runnable() {
+        public void run() {
+            if (adapter.getCount() == page) {
+                page = 0;
+            } else {
+                page++;
+            }
+            viewPager.setCurrentItem(page, true);
+            handler.postDelayed(runnable, delay);
+        }
+    };
 
     public MainCentralFragment() {
         // Required empty public constructor
@@ -79,10 +96,9 @@ public class MainCentralFragment extends Fragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
+        handler = new Handler();
         viewPager = root.findViewById(R.id.view_pager);
         videoView = root.findViewById(R.id.myVideo);
-
-        DatabaseReference imageReference = database.getReference("AppMedia/imagenes");
 
 
         /*String videoUri = "https://firebasestorage.googleapis.com/v0/b/infosucursaltv.appspot.com/o/media%2Fvideos%2Fvideo_financiera.mp4?alt=media&token=68ebb743-f190-4604-a533-29d3e5a09715";
@@ -172,37 +188,53 @@ public class MainCentralFragment extends Fragment {
         videoView.setVisibility(View.GONE);
         adapter = new CustomSwipeAadapter(getActivity());
         viewPager.setAdapter(adapter);
-        Timer timer = new Timer();
-        timer.schedule(new MyTimerTask(), 2000, 4000);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                page = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        //Direccion remota de dominio publico aqui tendra q ir nuestra direccion de firebase
+
 
         return root;
     }
-
-    public class MyTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    if(viewPager.getCurrentItem() == 0){
-                        viewPager.setCurrentItem(1);
-                        //viewPager.setCurrentItem(1, true);
-                    }else if(viewPager.getCurrentItem() == 1){
-                        viewPager.setCurrentItem(2);
-                        //viewPager.setCurrentItem(2, true);
-                    }else if(viewPager.getCurrentItem() == 2){
-                        viewPager.setCurrentItem(3);
-                        //viewPager.setCurrentItem(0, true);
-                    }else if(viewPager.getCurrentItem() == 3) {
-                        viewPager.setCurrentItem(0);
-                    }
-                }
-            });
-        }
+    @Override
+    public void onStart() {
+        super.onStart();
+        handler.postDelayed(runnable, delay);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        handler.removeCallbacks(runnable);
+    }
+
+    public  class VideoProgress extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+        }
+    }
 
 }

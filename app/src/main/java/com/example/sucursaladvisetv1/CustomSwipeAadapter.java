@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomSwipeAadapter extends PagerAdapter {
-    private String [] image_resource;// = {R.drawable.finaciera_plan,R.drawable.financiera_bancos,R.drawable.financiera_independencia};
+    //private String [] image_resource;= {R.drawable.finaciera_plan,R.drawable.financiera_bancos,R.drawable.financiera_independencia};
     private Context context;
     private List<String> listaImagenesUrl = new ArrayList<String>();
     private LayoutInflater layoutInflater;
@@ -68,7 +68,6 @@ public class CustomSwipeAadapter extends PagerAdapter {
 
     public void addlist(){
         myBaseReference = FirebaseDatabase.getInstance().getReference("AppMedia/imagenes");
-        Log.d("MODELO","DatabaseREFERENCE: " + myBaseReference);
 
         myBaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -82,9 +81,8 @@ public class CustomSwipeAadapter extends PagerAdapter {
                                         listaImagenesUrl.add(getUrl.getValue(String.class).trim());
                                         break;
                                 }
-                                Log.d("KEY", "LAS URL: ");
+                                Log.d("KEY", "LAS URL: " + listaImagenesUrl);
                                 notifyDataSetChanged();
-                                //image_resource = urlImages;
                             }
                         }
 
