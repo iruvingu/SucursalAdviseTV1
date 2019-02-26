@@ -84,34 +84,6 @@ public class MainCentralFragment extends Fragment {
 
         DatabaseReference imageReference = database.getReference("AppMedia/imagenes");
 
-        imageReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-
-                    for (DataSnapshot object : dataSnapshot.getChildren()) {
-                        for (DataSnapshot string : object.getChildren()) {
-                            switch (string.getKey()) {
-                                case "url":
-                                    imageUrlList.add(string.getValue(String.class));
-                                default :
-                                    break;
-                            }
-                        }
-                    }
-
-                    Log.v("url", imageUrlList.get(0));
-                    Log.v("url", imageUrlList.get(1));
-                    Log.v("url", imageUrlList.get(2));
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         /*String videoUri = "https://firebasestorage.googleapis.com/v0/b/infosucursaltv.appspot.com/o/media%2Fvideos%2Fvideo_financiera.mp4?alt=media&token=68ebb743-f190-4604-a533-29d3e5a09715";
 
@@ -196,34 +168,14 @@ public class MainCentralFragment extends Fragment {
 //            Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
 //        }
 
-
+        //View Pager
         videoView.setVisibility(View.GONE);
         adapter = new CustomSwipeAadapter(getActivity());
         viewPager.setAdapter(adapter);
         Timer timer = new Timer();
         timer.schedule(new MyTimerTask(), 2000, 4000);
 
-        //Direccion remota de dominio publico aqui tendra q ir nuestra direccion de firebase
-
-
         return root;
-    }
-
-    public  class VideoProgress extends AsyncTask<Void, Integer, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-
-        }
     }
 
     public class MyTimerTask extends TimerTask {
@@ -235,15 +187,17 @@ public class MainCentralFragment extends Fragment {
                 @Override
                 public void run() {
 
-                    if(viewPager.getCurrentItem()==0){
+                    if(viewPager.getCurrentItem() == 0){
                         viewPager.setCurrentItem(1);
                         //viewPager.setCurrentItem(1, true);
-                    }else if(viewPager.getCurrentItem()==1){
+                    }else if(viewPager.getCurrentItem() == 1){
                         viewPager.setCurrentItem(2);
                         //viewPager.setCurrentItem(2, true);
-                    }else if(viewPager.getCurrentItem()==2){
-                        viewPager.setCurrentItem(0);
+                    }else if(viewPager.getCurrentItem() == 2){
+                        viewPager.setCurrentItem(3);
                         //viewPager.setCurrentItem(0, true);
+                    }else if(viewPager.getCurrentItem() == 3) {
+                        viewPager.setCurrentItem(0);
                     }
                 }
             });
