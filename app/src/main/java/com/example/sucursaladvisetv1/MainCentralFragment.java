@@ -2,11 +2,10 @@ package com.example.sucursaladvisetv1;
 
 
 import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -16,8 +15,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -35,17 +32,24 @@ import java.util.List;
 public class MainCentralFragment extends Fragment {
 
     private ViewPager viewPager;
-    private CustomSwipeAadapter adapter;
-    private VideoView videoView;
+    private MainCentralAdapter adapter;
     private Handler handler;
     private Context context;
+
+    // Variables
     private int delay = 5000; //milliseconds
     private int page = 0;
 
-    int duration = 0;
+    private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addlist();
+    }
 
     //Runable
     Runnable runnable = new Runnable() {
@@ -74,11 +78,12 @@ public class MainCentralFragment extends Fragment {
 
         handler = new Handler();
         viewPager = root.findViewById(R.id.view_pager);
-        videoView = root.findViewById(R.id.myVideo);
 
         //View Pager
-        adapter = new CustomSwipeAadapter(getActivity());
+        adapter = new MainCentralAdapter(getChildFragmentManager());
+
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -96,7 +101,6 @@ public class MainCentralFragment extends Fragment {
             }
         });
 
-        //Direccion remota de dominio publico aqui tendra q ir nuestra direccion de firebase
 
         return root;
     }
@@ -112,7 +116,7 @@ public class MainCentralFragment extends Fragment {
         handler.removeCallbacks(runnable);
     }
 
-    // Este metodo debe sacar y meter en la lista todos los datos
+    // Este metodo debe sacar y meter en la lista Objetos todos los datos
     public void addlist(){
         DatabaseReference databaseReference = database.getReference("appmedia");
 
@@ -121,19 +125,9 @@ public class MainCentralFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     try{
-                        for (DataSnapshot getImagesName : dataSnapshot.getChildren()){
-                            for (DataSnapshot getUrl : getImagesName.getChildren()){
-                                switch (getUrl.getKey()){
-                                    case "url":
-                                        listaImagenesUrl.add(getUrl.getValue(String.class).trim());
-                                        break;
-                                }
-                                Log.d("KEY", "LAS URL: " + listaImagenesUrl);
-                                notifyDataSetChanged();
-                            }
+                        for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
+                            listaObjetos.add(objectMedia.getValue(MediaObject.class));
                         }
-
-
                     }catch(Exception e){
 
                     }
@@ -165,24 +159,31 @@ public class MainCentralFragment extends Fragment {
         //overrideMethods
         @Override
         public Fragment getItem(int position) {
-            return getFragment(infoListShowInThis.get(position), position);
+            return getFragment(listaObjetos.get(position), position);
         }
 
         // Cuenta el tamaño de las imagenes y videos
         @Override
         public int getCount() {
-            return infoListShowInThis.size();
+            return listaObjetos.size();
         }
 
         //gral metods
-        private Fragment getFragment(String nameImage, int position){
+        private Fragment getFragment(MediaObject mediaObject, int position){
             Fragment fragment = fragments.get(position);
-            if(fragment==null){
-
-                Bundle bundle = new Bundle();
-                bundle.putString("urlImage", nameImage);
-                fragment = ShowImageFragment.newInstance(bundle);
-                fragments.put(position, fragment);
+            if(fragment == null){
+                if (mediaObject.getTipo().equals("img")) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("uri_image", mediaObject.getUrl());
+                    fragment = ImageFragment.newInstance(bundle);
+                    fragments.put(position, fragment);
+                }
+                else if (mediaObject.getTipo().equals("video")) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("uri_image", mediaObject.getUrl());
+                    fragment = VideoFragment.newInstance(bundle);
+                    fragments.put(position, fragment);
+                }
 
             }
             return fragment;
