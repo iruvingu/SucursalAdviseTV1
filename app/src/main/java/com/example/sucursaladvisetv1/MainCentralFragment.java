@@ -2,50 +2,32 @@ package com.example.sucursaladvisetv1;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Registry;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,16 +37,12 @@ public class MainCentralFragment extends Fragment {
     private ViewPager viewPager;
     private CustomSwipeAadapter adapter;
     private VideoView videoView;
-    ProgressBar progressBar;
-    private Context context;
     private Handler handler;
+    private Context context;
     private int delay = 5000; //milliseconds
     private int page = 0;
 
-    List<String> imageUrlList = new ArrayList<String>();
-
-    Boolean isPlaying;
-    int current = 0, duration = 0;
+    int duration = 0;
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -91,8 +69,6 @@ public class MainCentralFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        isPlaying = false;
-
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
@@ -100,45 +76,7 @@ public class MainCentralFragment extends Fragment {
         viewPager = root.findViewById(R.id.view_pager);
         videoView = root.findViewById(R.id.myVideo);
 
-        // Datos Firebase
-
-        try{
-
-            DatabaseReference videoRef = database.getReference("AppMedia/videos/video1/url");
-
-            videoRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    Uri vidUri = Uri.parse(String.valueOf(dataSnapshot.getValue()));
-
-                    videoView.setVideoURI(vidUri);
-                    videoView.requestFocus();
-
-                    // Get the video's duration
-                    videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            duration = mp.getDuration() / 1000;
-                            String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
-                        }
-                    });
-
-                    videoView.start();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.v("ErrorBD", "No hay DAtos");
-                }
-            });
-
-        }catch (Exception e){
-            Toast.makeText(context, "Video no visible", Toast.LENGTH_SHORT).show();
-        }
-
         //View Pager
-        videoView.setVisibility(View.GONE);
         adapter = new CustomSwipeAadapter(getActivity());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -160,7 +98,6 @@ public class MainCentralFragment extends Fragment {
 
         //Direccion remota de dominio publico aqui tendra q ir nuestra direccion de firebase
 
-
         return root;
     }
     @Override
@@ -175,18 +112,80 @@ public class MainCentralFragment extends Fragment {
         handler.removeCallbacks(runnable);
     }
 
-    public  class VideoProgress extends AsyncTask<Void, Integer, Void> {
+    // Este metodo debe sacar y meter en la lista todos los datos
+    public void addlist(){
+        DatabaseReference databaseReference = database.getReference("appmedia");
 
-        @Override
-        protected Void doInBackground(Void... voids) {
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    try{
+                        for (DataSnapshot getImagesName : dataSnapshot.getChildren()){
+                            for (DataSnapshot getUrl : getImagesName.getChildren()){
+                                switch (getUrl.getKey()){
+                                    case "url":
+                                        listaImagenesUrl.add(getUrl.getValue(String.class).trim());
+                                        break;
+                                }
+                                Log.d("KEY", "LAS URL: " + listaImagenesUrl);
+                                notifyDataSetChanged();
+                            }
+                        }
 
-            return null;
+
+                    }catch(Exception e){
+
+                    }
+                }else{
+
+                }
+                return ;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public class MainCentralAdapter extends FragmentStatePagerAdapter {
+
+        //
+        private SparseArray<Fragment> fragments = new SparseArray<>();
+
+
+        //constructor
+        public MainCentralAdapter(FragmentManager fm) {
+            super(fm);
         }
 
+        //overrideMethods
         @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
+        public Fragment getItem(int position) {
+            return getFragment(infoListShowInThis.get(position), position);
+        }
 
+        // Cuenta el tamaño de las imagenes y videos
+        @Override
+        public int getCount() {
+            return infoListShowInThis.size();
+        }
+
+        //gral metods
+        private Fragment getFragment(String nameImage, int position){
+            Fragment fragment = fragments.get(position);
+            if(fragment==null){
+
+                Bundle bundle = new Bundle();
+                bundle.putString("urlImage", nameImage);
+                fragment = ShowImageFragment.newInstance(bundle);
+                fragments.put(position, fragment);
+
+            }
+            return fragment;
         }
     }
 

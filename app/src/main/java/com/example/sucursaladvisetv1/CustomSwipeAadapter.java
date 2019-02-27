@@ -3,6 +3,9 @@ package com.example.sucursaladvisetv1;
 import android.content.Context;
 import android.net.Uri;
 import android.nfc.Tag;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,7 +54,7 @@ public class CustomSwipeAadapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
 
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View item_view = layoutInflater.inflate(R.layout.swipe_layout,container,false);
+        View item_view = layoutInflater.inflate(R.layout.fragment_image,container,false);
         ImageView imageView = item_view.findViewById(R.id.image_view);
 
         Glide.with(item_view).load(Uri.parse(listaImagenesUrl.get(position))).centerCrop().into(imageView);
@@ -66,41 +69,6 @@ public class CustomSwipeAadapter extends PagerAdapter {
         container.removeView((LinearLayout)object);
     }
 
-    public void addlist(){
-        myBaseReference = FirebaseDatabase.getInstance().getReference("AppMedia/imagenes");
-
-        myBaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    try{
-                        for (DataSnapshot getImagesName : dataSnapshot.getChildren()){
-                            for (DataSnapshot getUrl : getImagesName.getChildren()){
-                                switch (getUrl.getKey()){
-                                    case "url":
-                                        listaImagenesUrl.add(getUrl.getValue(String.class).trim());
-                                        break;
-                                }
-                                Log.d("KEY", "LAS URL: " + listaImagenesUrl);
-                                notifyDataSetChanged();
-                            }
-                        }
 
 
-                    }catch(Exception e){
-
-                    }
-                }else{
-
-                }
-                return ;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 }
