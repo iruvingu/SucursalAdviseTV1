@@ -97,7 +97,7 @@ public class HeadScreenFragment extends Fragment {
         //Datos de Sucursal Firebase
         try {
             DatabaseReference SucursalRef =
-                    database.getReference("Sucursales/sucursal_0/informacion/nombre");
+                    database.getReference("sucursales/sucursal_0/informacion/nombre");
 
             SucursalRef.addValueEventListener(new ValueEventListener() {
                 @Override

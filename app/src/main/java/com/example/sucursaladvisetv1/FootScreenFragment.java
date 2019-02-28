@@ -36,7 +36,7 @@ public class FootScreenFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_foot_screen, container, false);
         textView = root.findViewById(R.id.label_marquee);
         DatabaseReference myDataBaseRef = FirebaseDatabase
-                .getInstance().getReference().child("Anuncios");
+                .getInstance().getReference().child("anuncios");
 
         try{
             // Read from the database

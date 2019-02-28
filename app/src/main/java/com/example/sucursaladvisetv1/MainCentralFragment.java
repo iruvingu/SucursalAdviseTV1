@@ -15,6 +15,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -48,7 +49,7 @@ public class MainCentralFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addlist();
+
     }
 
     //Runable
@@ -59,8 +60,13 @@ public class MainCentralFragment extends Fragment {
             } else {
                 page++;
             }
-            viewPager.setCurrentItem(page, true);
-            handler.postDelayed(runnable, delay);
+            try {
+                viewPager.setCurrentItem(page, true);
+            } finally {
+                handler.postDelayed(runnable, delay);
+            }
+
+
         }
     };
 
@@ -79,28 +85,7 @@ public class MainCentralFragment extends Fragment {
         handler = new Handler();
         viewPager = root.findViewById(R.id.view_pager);
 
-        //View Pager
-        adapter = new MainCentralAdapter(getChildFragmentManager());
-
-        viewPager.setAdapter(adapter);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                page = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
+        addlist();
 
         return root;
     }
@@ -118,7 +103,7 @@ public class MainCentralFragment extends Fragment {
 
     // Este metodo debe sacar y meter en la lista Objetos todos los datos
     public void addlist(){
-        DatabaseReference databaseReference = database.getReference("appmedia");
+        DatabaseReference databaseReference = database.getReference("app_media");
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -128,6 +113,29 @@ public class MainCentralFragment extends Fragment {
                         for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
                         }
+
+                        //View Pager
+                        adapter = new MainCentralAdapter(getChildFragmentManager());
+
+                        viewPager.setAdapter(adapter);
+
+                        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                            }
+
+                            @Override
+                            public void onPageSelected(int position) {
+                                page = position;
+                            }
+
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+
+                            }
+                        });
+
                     }catch(Exception e){
 
                     }
@@ -180,7 +188,7 @@ public class MainCentralFragment extends Fragment {
                 }
                 else if (mediaObject.getTipo().equals("video")) {
                     Bundle bundle = new Bundle();
-                    bundle.putString("uri_image", mediaObject.getUrl());
+                    bundle.putString("uri_video", mediaObject.getUrl());
                     fragment = VideoFragment.newInstance(bundle);
                     fragments.put(position, fragment);
                 }
