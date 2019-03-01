@@ -54,7 +54,7 @@ public class VideoFragment extends Fragment {
         Uri videoUri = Uri.parse(videoUriString);
 
         videoView.setVideoURI(videoUri);
-        videoView.requestFocus();
+
 
         // Thi can Get the video's duration
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -63,10 +63,10 @@ public class VideoFragment extends Fragment {
                 int duration = mp.getDuration() / 1000;
                 String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
                 Log.v("Video_Duration", durationString);
+                videoView.requestFocus();
+                videoView.start();
             }
         });
-
-        videoView.start();
 
         return view;
     }

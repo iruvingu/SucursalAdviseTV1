@@ -137,17 +137,17 @@ public class MainCentralFragment extends Fragment {
                         });
 
                     }catch(Exception e){
-
+                        Log.d("Error", "Error: No existen datos");
                     }
                 }else{
-
+                    Log.d("Error", "Error: No existen datos");
                 }
                 return ;
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Error", "Error: No existen datos");
             }
         });
 
