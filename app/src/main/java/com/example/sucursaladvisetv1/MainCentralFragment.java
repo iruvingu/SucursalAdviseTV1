@@ -1,10 +1,14 @@
 package com.example.sucursaladvisetv1;
 
 
+import android.app.DownloadManager;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,14 +20,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import android.widget.VideoView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,13 +49,16 @@ public class MainCentralFragment extends Fragment {
     private Context context;
 
     // Variables
-    private int delay = 5000; //milliseconds
+    private int delay = 120000; //milliseconds
     private int page = 0;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    //Firebase Storage
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,8 +79,6 @@ public class MainCentralFragment extends Fragment {
             } finally {
                 handler.postDelayed(runnable, delay);
             }
-
-
         }
     };
 
@@ -113,6 +125,21 @@ public class MainCentralFragment extends Fragment {
                         for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
                         }
+                        for (int i = listaObjetos.size() - 1; i >= 0; i--) {
+                            if (listaObjetos.get(i).getTipo().equals("img")) {
+                                listaObjetos.remove(i);
+                            }
+                        }
+                        for (int i = listaObjetos.size() - 1; i >= 0 ; i--) {
+                            if (listaObjetos.get(i).getTipo().equals("video")) {
+                                String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
+                                        listaObjetos.get(i).getNombre());
+                                Log.v("localPath", localPath);
+
+                                listaObjetos.get(i).setUrl(localPath);
+                            }
+                        }
+                        Log.v("Lista", String.valueOf(listaObjetos.size()) );
 
                         //View Pager
                         adapter = new MainCentralAdapter(getChildFragmentManager());
@@ -122,7 +149,6 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
                             }
 
                             @Override
@@ -153,6 +179,41 @@ public class MainCentralFragment extends Fragment {
 
     }
 
+    private String downloadVideosLocal(String url, String videoName) {
+        // Getting the data from Storage from url
+        StorageReference videoRef = storage.getReferenceFromUrl(url);
+
+        // File apkStorage = new File(Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
+
+        Log.v("PATH", Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
+        try {
+            File localFile = File.createTempFile("videos",".mp4");
+
+            videoRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    // Local temp file has been created
+                }
+            }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Handle any errors
+                    Log.v("Fail", "File Failure");
+                }
+            });
+
+            return localFile.getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public class MainCentralAdapter extends FragmentStatePagerAdapter {
 
         //
@@ -173,6 +234,7 @@ public class MainCentralFragment extends Fragment {
         // Cuenta el tamaño de las imagenes y videos
         @Override
         public int getCount() {
+
             return listaObjetos.size();
         }
 
@@ -180,19 +242,19 @@ public class MainCentralFragment extends Fragment {
         private Fragment getFragment(MediaObject mediaObject, int position){
             Fragment fragment = fragments.get(position);
             if(fragment == null){
-                if (mediaObject.getTipo().equals("img")) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("uri_image", mediaObject.getUrl());
-                    fragment = ImageFragment.newInstance(bundle);
-                    fragments.put(position, fragment);
-                }
-                else if (mediaObject.getTipo().equals("video")) {
+//                if (mediaObject.getTipo().equals("img")) {
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("uri_image", mediaObject.getUrl());
+//                    fragment = ImageFragment.newInstance(bundle);
+//                    fragments.put(position, fragment);
+//                }
+//                else
+            if (mediaObject.getTipo().equals("video")) {
                     Bundle bundle = new Bundle();
                     bundle.putString("uri_video", mediaObject.getUrl());
                     fragment = VideoFragment.newInstance(bundle);
                     fragments.put(position, fragment);
                 }
-
             }
             return fragment;
         }
