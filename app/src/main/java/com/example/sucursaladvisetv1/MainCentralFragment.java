@@ -88,7 +88,8 @@ public class MainCentralFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void onHandlerListener(){
+    public void onHandlerListener(int position){
+        banderas.set(position, false);
         Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
     }
 
@@ -147,7 +148,7 @@ public class MainCentralFragment extends Fragment {
                             }
                         }
                         Log.v("Lista", String.valueOf(listaObjetos.size()) );
-
+                        Log.v("Lista_ Bandera", String.valueOf(banderas.size()));
                         //View Pager
                         adapter = new MainCentralAdapter(getChildFragmentManager());
 
@@ -158,12 +159,8 @@ public class MainCentralFragment extends Fragment {
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                                 Log.v("Postion", "Position" + position);
                                 Log.v("ObjectListPosition", "Tipo es" + listaObjetos.get(position).getTipo());
-                                if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    videosFlag = true;
-                                    Log.v("videos_flag", String.valueOf(videosFlag));
-                                } else {
-                                    videosFlag = false;
-                                }
+                                if (listaObjetos.get(position).getTipo().equals("video"))
+                                    banderas.set(position, true);
                             }
 
                             @Override
@@ -268,7 +265,8 @@ public class MainCentralFragment extends Fragment {
             if (mediaObject.getTipo().equals("video")) {
                     Bundle bundle = new Bundle();
                     bundle.putString("uri_video", mediaObject.getUrl());
-                    bundle.putBoolean("boolean_video", videosFlag);
+                    bundle.putBoolean("boolean_video", banderas.get(position));
+                    bundle.putInt("position", position);
                     fragment = VideoFragment.newInstance(bundle);
                     fragments.put(position, fragment);
                 }

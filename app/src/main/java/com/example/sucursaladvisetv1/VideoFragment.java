@@ -23,6 +23,7 @@ public class VideoFragment extends Fragment {
 
     // Variables
     private String videoUriString = "";
+    private int position;
 
     public VideoFragment() {
         // Required empty public constructor
@@ -40,8 +41,10 @@ public class VideoFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainCentralFragment = (MainCentralFragment) getParentFragment();
+        position = 0;
         if (getArguments() != null) {
             videoUriString = getArguments().getString("uri_video");
+            position = getArguments().getInt("position");
         }
     }
 
@@ -78,7 +81,7 @@ public class VideoFragment extends Fragment {
             videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    mainCentralFragment.onHandlerListener();
+                    mainCentralFragment.onHandlerListener(position);
                 }
             });
         }
