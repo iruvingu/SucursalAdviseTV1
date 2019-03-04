@@ -19,6 +19,7 @@ import android.widget.VideoView;
 public class VideoFragment extends Fragment {
 
     private VideoView videoView;
+    private MainCentralFragment mainCentralFragment;
 
     // Variables
     private String videoUriString = "";
@@ -38,6 +39,7 @@ public class VideoFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainCentralFragment = (MainCentralFragment) getParentFragment();
         if (getArguments() != null) {
             videoUriString = getArguments().getString("uri_video");
         }
@@ -67,6 +69,22 @@ public class VideoFragment extends Fragment {
                 videoView.start();
             }
         });
+
+
+        Log.v("Argument_Video", String.valueOf(getArguments().getBoolean("boolean_video")));
+        if (getArguments().getBoolean("boolean_video") == false) {
+            videoView.pause();
+        } else {
+            videoView.start();
+
+            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    mainCentralFragment.onHandlerListener();
+                }
+            });
+        }
+        // videoView.start();
 
         return view;
     }

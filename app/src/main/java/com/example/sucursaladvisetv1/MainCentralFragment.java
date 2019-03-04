@@ -51,8 +51,10 @@ public class MainCentralFragment extends Fragment {
     // Variables
     private int delay = 120000; //milliseconds
     private int page = 0;
+    Boolean videosFlag = false;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
+    private ArrayList<Boolean> banderas = new ArrayList<Boolean>();
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -84,6 +86,10 @@ public class MainCentralFragment extends Fragment {
 
     public MainCentralFragment() {
         // Required empty public constructor
+    }
+
+    public void onHandlerListener(){
+        Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
     }
 
 
@@ -124,17 +130,18 @@ public class MainCentralFragment extends Fragment {
                     try{
                         for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
+                            banderas.add(false);
                         }
-                        for (int i = listaObjetos.size() - 1; i >= 0; i--) {
-                            if (listaObjetos.get(i).getTipo().equals("img")) {
-                                listaObjetos.remove(i);
-                            }
-                        }
+//                        for (int i = listaObjetos.size() - 1; i >= 0; i--) {
+//                            if (listaObjetos.get(i).getTipo().equals("img")) {
+//                                listaObjetos.remove(i);
+//                            }
+//                        }
                         for (int i = listaObjetos.size() - 1; i >= 0 ; i--) {
                             if (listaObjetos.get(i).getTipo().equals("video")) {
                                 String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
                                         listaObjetos.get(i).getNombre());
-                                Log.v("localPath", localPath);
+                                // Log.v("localPath", localPath);
 
                                 listaObjetos.get(i).setUrl(localPath);
                             }
@@ -149,6 +156,14 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                                Log.v("Postion", "Position" + position);
+                                Log.v("ObjectListPosition", "Tipo es" + listaObjetos.get(position).getTipo());
+                                if (listaObjetos.get(position).getTipo().equals("video")) {
+                                    videosFlag = true;
+                                    Log.v("videos_flag", String.valueOf(videosFlag));
+                                } else {
+                                    videosFlag = false;
+                                }
                             }
 
                             @Override
@@ -185,7 +200,7 @@ public class MainCentralFragment extends Fragment {
 
         // File apkStorage = new File(Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
 
-        Log.v("PATH", Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
+        // Log.v("PATH", Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
         try {
             File localFile = File.createTempFile("videos",".mp4");
 
@@ -193,11 +208,12 @@ public class MainCentralFragment extends Fragment {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     // Local temp file has been created
+                    Log.v("VideoDownloaded", "The video was downloaded");
                 }
             }).addOnProgressListener(new OnProgressListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(FileDownloadTask.TaskSnapshot taskSnapshot) {
-
+                    Log.d("Loading", "El video se esta cargando");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -206,8 +222,8 @@ public class MainCentralFragment extends Fragment {
                     Log.v("Fail", "File Failure");
                 }
             });
-
-            return localFile.getPath();
+            Log.v("AbstractPath", localFile.getAbsolutePath());
+            return localFile.getAbsolutePath();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -242,16 +258,17 @@ public class MainCentralFragment extends Fragment {
         private Fragment getFragment(MediaObject mediaObject, int position){
             Fragment fragment = fragments.get(position);
             if(fragment == null){
-//                if (mediaObject.getTipo().equals("img")) {
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("uri_image", mediaObject.getUrl());
-//                    fragment = ImageFragment.newInstance(bundle);
-//                    fragments.put(position, fragment);
-//                }
-//                else
+                if (mediaObject.getTipo().equals("img")) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("uri_image", mediaObject.getUrl());
+                    fragment = ImageFragment.newInstance(bundle);
+                    fragments.put(position, fragment);
+                }
+                else
             if (mediaObject.getTipo().equals("video")) {
                     Bundle bundle = new Bundle();
                     bundle.putString("uri_video", mediaObject.getUrl());
+                    bundle.putBoolean("boolean_video", videosFlag);
                     fragment = VideoFragment.newInstance(bundle);
                     fragments.put(position, fragment);
                 }
