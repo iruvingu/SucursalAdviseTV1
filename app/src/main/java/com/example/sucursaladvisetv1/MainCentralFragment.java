@@ -51,7 +51,6 @@ public class MainCentralFragment extends Fragment {
     // Variables
     private int delay = 120000; //milliseconds
     private int page = 0;
-    Boolean videosFlag = false;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
     private ArrayList<Boolean> banderas = new ArrayList<Boolean>();
@@ -157,15 +156,21 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                                Log.v("Postion", "Position" + position);
-                                Log.v("ObjectListPosition", "Tipo es" + listaObjetos.get(position).getTipo());
-                                if (listaObjetos.get(position).getTipo().equals("video"))
-                                    banderas.set(position, true);
+                                Log.v("Postion", "Position " + position);
+                                Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());
+
                             }
 
                             @Override
                             public void onPageSelected(int position) {
                                 page = position;
+                                if (listaObjetos.get(position).getTipo().equals("video"))
+                                    banderas.set(position, true);
+
+                                adapter.getFragment(position + 1);
+
+                                VideoFragment videoFragment = new VideoFragment();
+                                videoFragment.playVideoToFragment();
                             }
 
                             @Override
@@ -236,6 +241,10 @@ public class MainCentralFragment extends Fragment {
         //constructor
         public MainCentralAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        public Fragment getFragment(int positionFragment){
+            return fragments.get(positionFragment);
         }
 
         //overrideMethods

@@ -1,11 +1,15 @@
 package com.example.sucursaladvisetv1;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,7 +73,7 @@ public class VideoFragment extends Fragment {
                 String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
                 Log.v("Video_Duration", durationString);
                 videoView.requestFocus();
-                videoView.start();
+                videoView.pause();
             }
         });
 
@@ -90,6 +94,12 @@ public class VideoFragment extends Fragment {
         // videoView.start();
 
         return view;
+    }
+
+    public void playVideoToFragment(){
+        if (videoView != null){
+            videoView.start();
+        }
     }
 
 }
