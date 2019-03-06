@@ -89,6 +89,8 @@ public class MainCentralFragment extends Fragment {
 
     public void onHandlerListener(int position){
         banderas.set(position, false);
+        viewPager.setCurrentItem(page + 1, true);
+        handler.removeCallbacks(runnable);
         Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
     }
 
@@ -156,23 +158,22 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                                Log.v("Postion", "Position " + position);
+                                /*Log.v("Postion", "Position " + position);
                                 Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
-                                Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());
+                                Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
                             }
 
                             @Override
                             public void onPageSelected(int position) {
                                 page = position;
+                                Log.v("Postion", "Position " + position);
+                                Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
+                                Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
                                     banderas.set(position, true);
-                                    adapter.getFragment(position + 1);
-
-                                    VideoFragment videoFragment = new VideoFragment();
-                                    Log.i("JHMM", "ClassFragment: " + videoFragment.getClass());
-                                    if (videoFragment instanceof  VideoFragment){
-                                        videoFragment.playVideoToFragment();
-                                    }
+                                    VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
+                                    Log.i("JHMM", "ClassFragment: " + videoFragment);
+                                    videoFragment.playVideoToFragment();
                                 }
                             }
 

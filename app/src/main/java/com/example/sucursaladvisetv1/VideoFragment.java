@@ -80,8 +80,14 @@ public class VideoFragment extends Fragment {
             }
         });
 
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mainCentralFragment.onHandlerListener(position);
+            }
+        });
 
-        Log.v("Argument_Video", String.valueOf(getArguments().getBoolean("boolean_video")));
+        /*Log.v("Argument_Video", String.valueOf(getArguments().getBoolean("boolean_video")));
         if (getArguments().getBoolean("boolean_video") == false) {
             videoView.pause();
         } else {
@@ -93,15 +99,17 @@ public class VideoFragment extends Fragment {
                     mainCentralFragment.onHandlerListener(position);
                 }
             });
-        }
+        }*/
         // videoView.start();
 
         return view;
     }
 
     public void playVideoToFragment(){
+        Log.v("VideoView", "Video view: " + videoView);
         if (videoView != null){
             videoView.start();
+            Log.v("AYUWOKI", "AYUWOKI IS PLAYINGS");
         }
         Log.v("AYUWOKI", "AYUWOKI IS PLAYING");
     }
