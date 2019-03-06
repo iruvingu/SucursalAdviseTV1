@@ -86,10 +86,15 @@ public class VideoFragment extends Fragment {
     }
 
     public void playVideoToFragment(){
+        // Pausar el runnable
+
+
         Log.v("VideoView", "Video view: " + videoView);
         if (videoView != null){
             videoView.start();
             Log.v("AYUWOKI", "AYUWOKI IS PLAYINGS");
+
+            mainCentralFragment.stopRunnable();
         }
         Log.v("AYUWOKI", "AYUWOKI IS PLAYING");
     }
