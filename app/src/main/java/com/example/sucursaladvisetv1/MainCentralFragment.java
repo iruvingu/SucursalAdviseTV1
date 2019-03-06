@@ -44,7 +44,7 @@ public class MainCentralFragment extends Fragment {
     private Context context;
 
     // Variables
-    private int delay = 120000; //milliseconds
+    private int delay = 15000; //milliseconds
     private int page = 0;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
@@ -81,22 +81,25 @@ public class MainCentralFragment extends Fragment {
         // Required empty public constructor
     }
 
+    // This method is called when the the video fragent finished. Then it goes to the next page of the adapter
     public void onHandlerListener(int position){
         int lastPosition = listaObjetos.size() - 1;
         Log.v("lastPosition", "" + lastPosition);
         Log.v("actual_pos", "" + position);
         if (position != lastPosition) {
             viewPager.setCurrentItem(page + 1, true);
-            handler.removeCallbacks(runnable);
-
         } else {
             viewPager.setCurrentItem(0, true);
-            handler.postDelayed(runnable, delay);
         }
+        handler.postDelayed(runnable, delay);
         Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
 
     }
 
+    public void stopRunnable() {
+        handler.removeCallbacks(runnable);
+        Log.v("StopRun", "RermoveCallbacks runnable");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -176,6 +179,7 @@ public class MainCentralFragment extends Fragment {
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
+
                                 }
                             }
 
