@@ -1,12 +1,8 @@
 package com.example.sucursaladvisetv1;
 
 
-import android.app.DownloadManager;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,7 +32,6 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,7 +48,6 @@ public class MainCentralFragment extends Fragment {
     private int page = 0;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
-    private ArrayList<Boolean> banderas = new ArrayList<Boolean>();
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -88,10 +82,17 @@ public class MainCentralFragment extends Fragment {
     }
 
     public void onHandlerListener(int position){
-        banderas.set(position, false);
-        viewPager.setCurrentItem(page + 1, true);
-        handler.removeCallbacks(runnable);
+        int lastPosition = listaObjetos.size() - 1;
+
+        if (position != lastPosition) {
+            viewPager.setCurrentItem(page + 1, true);
+            handler.removeCallbacks(runnable);
+
+        } else {
+            handler.post(runnable);
+        }
         Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -132,7 +133,7 @@ public class MainCentralFragment extends Fragment {
                     try{
                         for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
-                            banderas.add(false);
+
                         }
 //                        for (int i = listaObjetos.size() - 1; i >= 0; i--) {
 //                            if (listaObjetos.get(i).getTipo().equals("img")) {
@@ -141,7 +142,7 @@ public class MainCentralFragment extends Fragment {
 //                        }
                         for (int i = listaObjetos.size() - 1; i >= 0 ; i--) {
                             if (listaObjetos.get(i).getTipo().equals("video")) {
-                                banderas.set(i,true);
+
                                 String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
                                         listaObjetos.get(i).getNombre());
                                 // Log.v("localPath", localPath);
@@ -167,10 +168,9 @@ public class MainCentralFragment extends Fragment {
                             public void onPageSelected(int position) {
                                 page = position;
                                 Log.v("Postion", "Position " + position);
-                                Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    banderas.set(position, true);
+
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
@@ -278,7 +278,6 @@ public class MainCentralFragment extends Fragment {
             if (mediaObject.getTipo().equals("video")) {
                     Bundle bundle = new Bundle();
                     bundle.putString("uri_video", mediaObject.getUrl());
-                    bundle.putBoolean("boolean_video", banderas.get(position));
                     bundle.putInt("position", position);
                     fragment = VideoFragment.newInstance(bundle);
                     fragments.put(position, fragment);

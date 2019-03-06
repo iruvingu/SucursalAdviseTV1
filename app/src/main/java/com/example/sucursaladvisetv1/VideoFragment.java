@@ -5,18 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 
@@ -68,7 +63,7 @@ public class VideoFragment extends Fragment {
         videoView.setVideoURI(videoUri);
 
 
-        // Thi can Get the video's duration
+        // This can Get the video's duration
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -86,21 +81,6 @@ public class VideoFragment extends Fragment {
                 mainCentralFragment.onHandlerListener(position);
             }
         });
-
-        /*Log.v("Argument_Video", String.valueOf(getArguments().getBoolean("boolean_video")));
-        if (getArguments().getBoolean("boolean_video") == false) {
-            videoView.pause();
-        } else {
-            videoView.start();
-
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    mainCentralFragment.onHandlerListener(position);
-                }
-            });
-        }*/
-        // videoView.start();
 
         return view;
     }
