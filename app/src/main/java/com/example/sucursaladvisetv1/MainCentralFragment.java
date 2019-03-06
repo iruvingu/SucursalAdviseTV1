@@ -83,13 +83,15 @@ public class MainCentralFragment extends Fragment {
 
     public void onHandlerListener(int position){
         int lastPosition = listaObjetos.size() - 1;
-
+        Log.v("lastPosition", "" + lastPosition);
+        Log.v("actual_pos", "" + position);
         if (position != lastPosition) {
             viewPager.setCurrentItem(page + 1, true);
             handler.removeCallbacks(runnable);
 
         } else {
-            handler.post(runnable);
+            viewPager.setCurrentItem(0, true);
+            handler.postDelayed(runnable, delay);
         }
         Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
 
