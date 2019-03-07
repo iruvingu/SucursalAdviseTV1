@@ -177,6 +177,9 @@ public class MainCentralFragment extends Fragment {
                                 /*Log.v("Postion", "Position " + position);
                                 Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
+                                if (listaObjetos.get(position).getTipo().equals("video")) {
+                                    stopRunnable();
+                                }
                             }
 
                             @Override
@@ -195,7 +198,7 @@ public class MainCentralFragment extends Fragment {
 
                             @Override
                             public void onPageScrollStateChanged(int state) {
-
+                                Log.v("OnPageScrollStateChanged", "" + state);
                             }
                         });
 
