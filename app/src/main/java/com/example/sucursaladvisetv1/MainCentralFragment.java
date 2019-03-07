@@ -10,9 +10,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -111,6 +113,14 @@ public class MainCentralFragment extends Fragment {
         handler = new Handler();
         viewPager = root.findViewById(R.id.view_pager);
 
+        // This enable swiping manually
+        viewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
         addlist();
 
         return root;
@@ -188,6 +198,7 @@ public class MainCentralFragment extends Fragment {
 
                             }
                         });
+
 
                     }catch(Exception e){
                         Log.d("Error", "Error: No existen datos");
@@ -292,5 +303,6 @@ public class MainCentralFragment extends Fragment {
             return fragment;
         }
     }
+
 
 }
