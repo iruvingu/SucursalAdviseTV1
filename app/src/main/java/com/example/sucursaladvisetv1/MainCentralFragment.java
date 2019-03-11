@@ -198,7 +198,7 @@ public class MainCentralFragment extends Fragment {
 
                             @Override
                             public void onPageScrollStateChanged(int state) {
-                                Log.v("OnPageScrollStateChanged", "" + state);
+                                Log.v("OnPageScrollStateCh", "" + state);
                             }
                         });
 
