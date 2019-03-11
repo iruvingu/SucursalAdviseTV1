@@ -94,8 +94,6 @@ public class MainCentralFragment extends Fragment {
             viewPager.setCurrentItem(0, true);
         }
         handler.postDelayed(runnable, delay);
-        Toast.makeText(getContext(), "Se acabo el video", Toast.LENGTH_LONG).show();
-
     }
 
     public void stopRunnable() {

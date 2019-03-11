@@ -91,6 +91,7 @@ public class VideoFragment extends Fragment {
 
         Log.v("VideoView", "Video view: " + videoView);
         if (videoView != null){
+            videoView.requestFocus();
             videoView.start();
             Log.v("AYUWOKI", "AYUWOKI IS PLAYINGS");
 
