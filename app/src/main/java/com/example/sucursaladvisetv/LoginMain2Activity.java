@@ -1,4 +1,4 @@
-package com.example.sucursaladvisetv1;
+package com.example.sucursaladvisetv;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

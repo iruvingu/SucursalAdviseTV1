@@ -1,4 +1,4 @@
-package com.example.sucursaladvisetv1;
+package com.example.sucursaladvisetv;
 
 import org.junit.Test;
 

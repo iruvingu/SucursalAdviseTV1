@@ -1,8 +1,6 @@
-package com.example.sucursaladvisetv1;
+package com.example.sucursaladvisetv;
 
 
-import android.content.Context;
-import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,8 +64,10 @@ public class VideoFragment extends Fragment {
         // This can Get the video's duration
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
-            public void onPrepared(MediaPlayer mp) {
-                int duration = mp.getDuration() / 1000;
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT
+                );
+                int duration = mediaPlayer.getDuration() / 1000;
                 String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
                 Log.v("Video_Duration", durationString);
                 videoView.requestFocus();

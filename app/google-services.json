@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "97075214337",
-    "firebase_url": "https://infosucursaltv.firebaseio.com",
-    "project_id": "infosucursaltv",
-    "storage_bucket": "infosucursaltv.appspot.com"
+    "project_number": "81238287235",
+    "firebase_url": "https://fintech-desarrollo-mx.firebaseio.com",
+    "project_id": "fintech-desarrollo-mx",
+    "storage_bucket": "fintech-desarrollo-mx.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:97075214337:android:46729914df1a8e50",
+        "mobilesdk_app_id": "1:81238287235:android:cb252e06b7ce03f8",
         "android_client_info": {
-          "package_name": "com.example.sucursaladvisetv1"
+          "package_name": "com.example.sucursaladvisetv"
         }
       },
       "oauth_client": [
         {
-          "client_id": "97075214337-3ofubo2b96tqcnfaelkhhaiulhke10bn.apps.googleusercontent.com",
+          "client_id": "81238287235-516c723cjdumpb59vdoo8esdoksbgte9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.sucursaladvisetv1",
+            "package_name": "com.example.sucursaladvisetv",
             "certificate_hash": "2bdf4267ae71739dee830ac0ae14e236cb74c3db"
           }
         },
         {
-          "client_id": "97075214337-baalk8vupvlha03rhpgbrdss5vqi4rsp.apps.googleusercontent.com",
+          "client_id": "81238287235-o2oov88c7b8qr44kve00ojnt7lgnui98.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCWqre3bjKPr4iAOw4j-mNqnWpMW1OxbO8"
+          "current_key": "AIzaSyAkryEKX_QYLWydf4EcV52JIxm28OgALKE"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "97075214337-baalk8vupvlha03rhpgbrdss5vqi4rsp.apps.googleusercontent.com",
+              "client_id": "81238287235-o2oov88c7b8qr44kve00ojnt7lgnui98.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
