@@ -177,11 +177,11 @@ public class MainCentralFragment extends Fragment {
                                 /*Log.v("Postion", "Position " + position);
                                 Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
-                                if (listaObjetos.get(position).getTipo().equals("video")) {
+                                /*if (listaObjetos.get(position).getTipo().equals("video")) {
                                     stopRunnable();
                                 }  else {
                                     startRunnable();
-                                }
+                                }*/
                             }
 
                             @Override
@@ -194,7 +194,7 @@ public class MainCentralFragment extends Fragment {
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
-
+                                    stopRunnable();
                                 } else {
                                     startRunnable();
                                 }
