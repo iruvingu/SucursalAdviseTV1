@@ -179,7 +179,7 @@ public class MainCentralFragment extends Fragment {
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
                                     stopRunnable();
-                                } else {
+                                }  else {
                                     startRunnable();
                                 }
                             }
@@ -195,6 +195,8 @@ public class MainCentralFragment extends Fragment {
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
 
+                                } else {
+                                    startRunnable();
                                 }
                             }
 
