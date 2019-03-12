@@ -137,7 +137,7 @@ public class MainCentralFragment extends Fragment {
         handler.removeCallbacks(runnable);
     }
 
-    // Este metodo debe sacar y meter en la lista Objetos todos los datos
+    // Este metodo debe sacar y meter en la lista Objetos de tipo MediaObject todos los datos
     public void addlist(){
         DatabaseReference databaseReference = database.getReference("app_media");
 
