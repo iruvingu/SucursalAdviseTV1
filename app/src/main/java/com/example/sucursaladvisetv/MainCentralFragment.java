@@ -91,12 +91,16 @@ public class MainCentralFragment extends Fragment {
         } else {
             viewPager.setCurrentItem(0, true);
         }
-        handler.postDelayed(runnable, delay);
+        startRunnable();
     }
 
     public void stopRunnable() {
         handler.removeCallbacks(runnable);
         Log.v("StopRun", "RermoveCallbacks runnable");
+    }
+
+    public void startRunnable() {
+        handler.postDelayed(runnable,delay);
     }
 
     @Override
@@ -175,6 +179,8 @@ public class MainCentralFragment extends Fragment {
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
                                     stopRunnable();
+                                } else {
+                                    startRunnable();
                                 }
                             }
 
