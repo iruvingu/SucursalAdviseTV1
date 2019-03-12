@@ -65,8 +65,6 @@ public class VideoFragment extends Fragment {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                mediaPlayer.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT
-                );
                 int duration = mediaPlayer.getDuration() / 1000;
                 String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
                 Log.v("Video_Duration", durationString);

@@ -44,7 +44,7 @@ public class MainCentralFragment extends Fragment {
     private Context context;
 
     // Variables
-    private int delay = 15000; //milliseconds
+    private int delay = 20000; //milliseconds
     private int page = 0;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
