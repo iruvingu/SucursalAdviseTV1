@@ -24,6 +24,7 @@ public class VideoFragment extends Fragment {
     // Variables
     private String videoUriString = "";
     private int position;
+    public int duration;
 
     public VideoFragment() {
         // Required empty public constructor
@@ -65,7 +66,7 @@ public class VideoFragment extends Fragment {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
-                int duration = mediaPlayer.getDuration() / 1000;
+                duration = mediaPlayer.getDuration();
                 String durationString = String.format("%02d:%02d", duration / 60, duration % 60);
                 Log.v("Video_Duration", durationString);
                 videoView.requestFocus();
@@ -81,6 +82,10 @@ public class VideoFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public int getDuration(){
+        return duration;
     }
 
     public void playVideoToFragment(){

@@ -42,6 +42,7 @@ public class MainCentralFragment extends Fragment {
     private MainCentralAdapter adapter;
     private Handler handler;
     private Context context;
+    private VideoFragment duration;
 
     // Variables
     private int delay = 20000; //milliseconds
@@ -58,6 +59,7 @@ public class MainCentralFragment extends Fragment {
     //Runable
     Runnable runnable = new Runnable() {
         public void run() {
+            Log.v("LADB", "Delay Runable: " + delay);
             if (adapter.getCount() == page) {
                 page = 0;
             } else {
@@ -68,6 +70,7 @@ public class MainCentralFragment extends Fragment {
             } finally {
                 handler.postDelayed(runnable, delay);
             }
+            Log.v("LADB", "Delay Runable: " + delay);
         }
     };
 
@@ -105,6 +108,7 @@ public class MainCentralFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
         handler = new Handler();
+        duration = new VideoFragment();
         viewPager = root.findViewById(R.id.view_pager);
 
         // This enable swiping manually
@@ -171,10 +175,14 @@ public class MainCentralFragment extends Fragment {
                                 /*Log.v("Postion", "Position " + position);
                                 Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
+
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    stopRunnable();
+                                    delay = duration.getDuration();
+                                    Log.v("Video_Duration", "Delay: " + delay);
+                                    //stopRunnable();
                                 }  else {
-                                    startRunnable();
+                                    delay = 20000;
+                                    //startRunnable();
 
                                 }
                             }
@@ -189,9 +197,11 @@ public class MainCentralFragment extends Fragment {
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
-                                    stopRunnable();
+                                    delay = duration.getDuration();
+                                    //stopRunnable();
                                 } else {
-                                    startRunnable();
+                                    delay = 20000;
+                                    //startRunnable();
                                 }
                             }
 
