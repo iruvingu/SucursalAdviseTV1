@@ -100,6 +100,10 @@ public class MainCentralFragment extends Fragment {
         handler.postDelayed(runnable,delay);
     }
 
+    public void changeDelay(int duration) {
+        delay = duration;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -177,7 +181,7 @@ public class MainCentralFragment extends Fragment {
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
 
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    delay = duration.getDuration();
+                                    // delay = duration.getDuration();
                                     Log.v("Video_Duration", "Delay: " + delay);
                                     //stopRunnable();
                                 }  else {
@@ -197,7 +201,7 @@ public class MainCentralFragment extends Fragment {
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
-                                    delay = duration.getDuration();
+                                    // delay = duration.getDuration();
                                     //stopRunnable();
                                 } else {
                                     delay = 20000;
