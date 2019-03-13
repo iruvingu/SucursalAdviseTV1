@@ -175,7 +175,8 @@ public class MainCentralFragment extends Fragment {
                                     stopRunnable();
                                 }  else {
                                     startRunnable();
-                                }*/
+                                    //XD
+                                }
                             }
 
                             @Override
