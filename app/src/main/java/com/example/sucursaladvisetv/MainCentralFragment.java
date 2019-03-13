@@ -101,7 +101,7 @@ public class MainCentralFragment extends Fragment {
     }
 
     public void changeDelay(int duration) {
-        delay = duration;
+        this.delay = duration;
     }
 
     @Override
@@ -181,7 +181,7 @@ public class MainCentralFragment extends Fragment {
                                 Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
 
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    // delay = duration.getDuration();
+                                    // delay = duration.getDurationVideo();
                                     Log.v("Video_Duration", "Delay: " + delay);
                                     //stopRunnable();
                                 }  else {
@@ -201,7 +201,7 @@ public class MainCentralFragment extends Fragment {
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
                                     Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
-                                    // delay = duration.getDuration();
+                                    // delay = duration.getDurationVideo();
                                     //stopRunnable();
                                 } else {
                                     delay = 20000;

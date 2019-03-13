@@ -70,7 +70,6 @@ public class VideoFragment extends Fragment {
                 duration = mediaPlayer.getDuration();
 
                 Log.v("Video_Duration", String.valueOf(duration) );
-                mainCentralFragment.changeDelay(duration);
                 videoView.requestFocus();
                 videoView.pause();
             }
@@ -86,7 +85,8 @@ public class VideoFragment extends Fragment {
         return view;
     }
 
-    public int getDuration(){
+    public int getDurationVideo(){
+
         return duration;
     }
 
@@ -95,6 +95,7 @@ public class VideoFragment extends Fragment {
         mainCentralFragment.stopRunnable();
         Log.v("VideoView", "Video view: " + videoView);
         if (videoView != null){
+            mainCentralFragment.changeDelay(duration);
             videoView.requestFocus();
             videoView.start();
             Log.v("AYUWOKI", "AYUWOKI IS PLAYINGS");
