@@ -55,12 +55,6 @@ public class MainCentralFragment extends Fragment {
     //Firebase Storage
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     //Runable
     Runnable runnable = new Runnable() {
         public void run() {
@@ -86,12 +80,12 @@ public class MainCentralFragment extends Fragment {
         int lastPosition = listaObjetos.size() - 1;
         Log.v("lastPosition", "" + lastPosition);
         Log.v("actual_pos", "" + position);
+        startRunnable();
         if (position != lastPosition) {
             viewPager.setCurrentItem(page + 1, true);
         } else {
             viewPager.setCurrentItem(0, true);
         }
-        startRunnable();
     }
 
     public void stopRunnable() {
