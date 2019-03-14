@@ -68,8 +68,6 @@ public class VideoFragment extends Fragment {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
                 duration = mediaPlayer.getDuration();
-
-                Log.v("Video_Duration", String.valueOf(duration) );
                 videoView.requestFocus();
                 videoView.pause();
             }
@@ -78,7 +76,6 @@ public class VideoFragment extends Fragment {
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                mainCentralFragment.onHandlerListener(position);
             }
         });
 
@@ -92,15 +89,11 @@ public class VideoFragment extends Fragment {
 
     public void playVideoToFragment(){
         // Pausar el runnable
-        mainCentralFragment.stopRunnable();
-        Log.v("VideoView", "Video view: " + videoView);
         if (videoView != null){
             mainCentralFragment.changeDelay(duration);
             videoView.requestFocus();
             videoView.start();
-            Log.v("AYUWOKI", "AYUWOKI IS PLAYINGS");
         }
-        Log.v("AYUWOKI", "AYUWOKI IS PLAYING");
     }
 
 }

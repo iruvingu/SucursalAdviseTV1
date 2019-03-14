@@ -59,7 +59,6 @@ public class MainCentralFragment extends Fragment {
     //Runable
     Runnable runnable = new Runnable() {
         public void run() {
-            Log.v("LADB", "Delay Runable: " + delay);
             if (adapter.getCount() == page) {
                 page = 0;
             } else {
@@ -70,7 +69,6 @@ public class MainCentralFragment extends Fragment {
             } finally {
                 handler.postDelayed(runnable, delay);
             }
-            Log.v("LADB", "Delay Runable: " + delay);
         }
     };
 
@@ -78,27 +76,6 @@ public class MainCentralFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // This method is called when the the video fragent finished. Then it goes to the next page of the adapter
-    public void onHandlerListener(int position){
-        int lastPosition = listaObjetos.size() - 1;
-        Log.v("lastPosition", "" + lastPosition);
-        Log.v("actual_pos", "" + position);
-        startRunnable();
-        if (position != lastPosition) {
-            viewPager.setCurrentItem(page + 1, true);
-        } else {
-            viewPager.setCurrentItem(0, true);
-        }
-    }
-
-    public void stopRunnable() {
-        handler.removeCallbacks(runnable);
-        Log.v("StopRun", "RermoveCallbacks runnable");
-    }
-
-    public void startRunnable() {
-        handler.postDelayed(runnable,delay);
-    }
 
     public void changeDelay(int duration) {
         this.delay = duration;
@@ -152,22 +129,13 @@ public class MainCentralFragment extends Fragment {
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
 
                         }
-//                        for (int i = listaObjetos.size() - 1; i >= 0; i--) {
-//                            if (listaObjetos.get(i).getTipo().equals("img")) {
-//                                listaObjetos.remove(i);
-//                            }
-//                        }
                         for (int i = listaObjetos.size() - 1; i >= 0 ; i--) {
                             if (listaObjetos.get(i).getTipo().equals("video")) {
-
                                 String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
                                         listaObjetos.get(i).getNombre());
-                                // Log.v("localPath", localPath);
-
                                 listaObjetos.get(i).setUrl(localPath);
                             }
                         }
-                        Log.v("Lista", String.valueOf(listaObjetos.size()) );
                         //View Pager
                         adapter = new MainCentralAdapter(getChildFragmentManager());
 
@@ -176,42 +144,27 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                                /*Log.v("Postion", "Position " + position);
-                                Log.v("Lista_ Bandera", String.valueOf(banderas.get(position)));
-                                Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());*/
 
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    // delay = duration.getDurationVideo();
                                     Log.v("Video_Duration", "Delay: " + delay);
-                                    //stopRunnable();
                                 }  else {
                                     delay = 20000;
-                                    //startRunnable();
-
                                 }
                             }
 
                             @Override
                             public void onPageSelected(int position) {
                                 page = position;
-                                Log.v("Postion", "Position " + position);
-                                Log.v("ObjectListPosition", "Tipo es " + listaObjetos.get(position).getTipo());
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-
                                     VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
-                                    Log.i("JHMM", "ClassFragment: " + videoFragment);
                                     videoFragment.playVideoToFragment();
-                                    // delay = duration.getDurationVideo();
-                                    //stopRunnable();
                                 } else {
                                     delay = 20000;
-                                    //startRunnable();
                                 }
                             }
 
                             @Override
                             public void onPageScrollStateChanged(int state) {
-                                Log.v("OnPageScrollStateCh", "" + state);
                             }
                         });
 
@@ -239,7 +192,6 @@ public class MainCentralFragment extends Fragment {
 
         // File apkStorage = new File(Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
 
-        // Log.v("PATH", Environment.DIRECTORY_DOWNLOADS + "/" + videoName);
         try {
             File localFile = File.createTempFile("videos",".mp4");
 
