@@ -96,4 +96,8 @@ public class VideoFragment extends Fragment {
         }
     }
 
+    public void stopVideoToFragment(){
+        videoView.pause();
+    }
+
 }

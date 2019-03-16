@@ -33,6 +33,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static android.support.v4.view.ViewPager.SCROLL_STATE_DRAGGING;
+import static android.support.v4.view.ViewPager.SCROLL_STATE_SETTLING;
+import static android.widget.NumberPicker.OnScrollListener.SCROLL_STATE_IDLE;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -42,7 +46,7 @@ public class MainCentralFragment extends Fragment {
     private MainCentralAdapter adapter;
     private Handler handler;
     private Context context;
-    private VideoFragment duration;
+    private VideoFragment videoFragment;
 
     // Variables
     private int delay = 20000; //milliseconds
@@ -59,6 +63,7 @@ public class MainCentralFragment extends Fragment {
     //Runable
     Runnable runnable = new Runnable() {
         public void run() {
+            Log.v("LADB", "Delay: " + delay);
             if (adapter.getCount() == page) {
                 page = 0;
             } else {
@@ -69,6 +74,7 @@ public class MainCentralFragment extends Fragment {
             } finally {
                 handler.postDelayed(runnable, delay);
             }
+            Log.v("LADB", "Delay: " + delay);
         }
     };
 
@@ -78,7 +84,7 @@ public class MainCentralFragment extends Fragment {
 
 
     public void changeDelay(int duration) {
-        this.delay = duration;
+        this.delay = duration + 10000;
     }
 
     @Override
@@ -89,7 +95,7 @@ public class MainCentralFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main_central, container, false);
 
         handler = new Handler();
-        duration = new VideoFragment();
+        videoFragment = new VideoFragment();
         viewPager = root.findViewById(R.id.view_pager);
 
         // This enable swiping manually
@@ -144,10 +150,21 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    Log.v("Video_Duration", "Delay: " + delay);
+                                    videoFragment = (VideoFragment) adapter.getFragment(position);
+                                    if (positionOffset != 0.0){
+                                        videoFragment.stopVideoToFragment();
+                                    }else{
+                                        videoFragment.playVideoToFragment();
+                                    }
                                 }  else {
+                                    int next = (position + 1 == adapter.getCount()) ? 0 : position + 1;
+
+                                    if (listaObjetos.get(next).getTipo().equals("video")) {
+                                        if(positionOffset != 0.0){
+                                            videoFragment.stopVideoToFragment();
+                                        }
+                                    }
                                     delay = 20000;
                                 }
                             }
@@ -156,7 +173,8 @@ public class MainCentralFragment extends Fragment {
                             public void onPageSelected(int position) {
                                 page = position;
                                 if (listaObjetos.get(position).getTipo().equals("video")) {
-                                    VideoFragment videoFragment = (VideoFragment) adapter.getFragment(position);
+                                    Log.v("LADB", "Delay: " + delay);
+                                    videoFragment = (VideoFragment) adapter.getFragment(position);
                                     videoFragment.playVideoToFragment();
                                 } else {
                                     delay = 20000;

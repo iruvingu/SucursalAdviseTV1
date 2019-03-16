@@ -8,7 +8,7 @@
     <string name="sucursal_nombre">Sucursal</string>
     <string name="bienvenida">BIENVENIDO A</string>
     <string name="inicio_sesion">Iniciar sesión en web</string>
-    <string name="inicio_sesion2">Entra a</string>
-    <string name="inicio_sesion3">e ingresa el siguiente código  para agregar este dispositivo</string>
+    <string name="inicio_sesion2">Ingresa a: </string>
+    <string name="inicio_sesion3">Código unico</string>
     <string name="code">CODE</string>
 </resources>
