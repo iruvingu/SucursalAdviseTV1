@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private String androidDeviceId;
     private Boolean statusTv;
     private Intent intentLogin;
+    private Intent intentMain;
     private DatabaseReference tvCodeRef;
 
     @Override
@@ -45,21 +46,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         long milis = new Date().getTime();
@@ -70,50 +56,45 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
         long milis = new Date().getTime();
         tvCodeRef = database.getReference().child("tv_codes/"+ androidDeviceId);
-        tvCodeRef.child("statusAPP").child(String.valueOf(milis)).setValue(false);
+        tvCodeRef.child("statusAPP").child(String.valueOf(milis)).setValue(true);
     }
 
 
-    public void tvCode(){
-        tvCodeRef = database.getReference().child("tv_codes/"+ androidDeviceId);
-        tvCodeRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()){
-                    try{
-                        for(DataSnapshot getStatus: dataSnapshot.getChildren()){
-                            switch (getStatus.getKey()){
-                                case "status":
-                                    statusTv = getStatus.getValue(Boolean.class);
-                                    Log.v("LADB", "Status: " + statusTv);
-                                    break;
-                            }
-                        }
-                    }catch (Exception e){
-                        Toast.makeText(MainActivity.this,"Error carga datos", Toast.LENGTH_LONG).show();
-                    }
-                    intentLogin = new Intent(getApplicationContext(), LoginMain2Activity.class);
-                    if (!statusTv){
-                        startActivity(intentLogin);
-                        finish();
-                    }
-                }else{
-                    Toast.makeText(MainActivity.this, "No existen Datos", Toast.LENGTH_LONG).show();
-                }
-            }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        intentLogin = new Intent(getApplicationContext(),LoginMain2Activity.class);
+        intentLogin.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        finish();
+    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this, "No existen Datos", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void tvCode() {
+            tvCodeRef = database.getReference().child("tv_codes/"+ androidDeviceId).child("status");
+            tvCodeRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        try{
+                            if(!dataSnapshot.getValue(Boolean.class)){
+                                intentLogin = new Intent(getApplicationContext(), LoginMain2Activity.class);
+                                startActivity(intentLogin);
+                                finish();
+                            }
+                        }catch (Exception e){
+                            Toast.makeText(MainActivity.this,"Error carga datos", Toast.LENGTH_LONG).show();
+                        }
+                    }else{
+                        Toast.makeText(MainActivity.this, "No existen Datos", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(MainActivity.this, "No existen Datos", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 
 }

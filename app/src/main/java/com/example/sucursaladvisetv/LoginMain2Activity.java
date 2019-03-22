@@ -41,33 +41,34 @@ public class LoginMain2Activity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
         Log.v("Etiqueta de Id Divece", "Android ID: " + androidDeviceId);
         codeTv.setText(androidDeviceId);
-        nextScreen();
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        nextScreen();
+    }
+
     private void nextScreen() {
-        tvCodeRef = database.getReference().child("tv_codes/"+ androidDeviceId);
+        tvCodeRef = database.getReference().child("tv_codes/"+ androidDeviceId).child("status");
         tvCodeRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     try{
-                        for (DataSnapshot getStatus: dataSnapshot.getChildren()){
-                            switch (getStatus.getKey()){
-                                case "status":
-                                    statusTv = getStatus.getValue(Boolean.class);
-                                    break;
-                            }
+                        if(dataSnapshot.getValue(Boolean.class)){
+                            Intent intent = new Intent(LoginMain2Activity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else {
+                            Toast.makeText(LoginMain2Activity.this, "No tienes acceso", Toast.LENGTH_SHORT).show();
                         }
+
                     }catch (Exception e){
                         Toast.makeText(LoginMain2Activity.this,"Error carga datos", Toast.LENGTH_LONG).show();
                     }
-                    intentMain = new Intent(getApplicationContext(),MainActivity.class);
-                    if (statusTv){
-                        startActivity(intentMain);
-                    }else{
-                        Toast.makeText(LoginMain2Activity.this, "No Tienes Acceso", Toast.LENGTH_LONG).show();
-                    }
+
                 }else{
                     Toast.makeText(LoginMain2Activity.this, "No existen Datos", Toast.LENGTH_LONG).show();
                 }
@@ -79,4 +80,5 @@ public class LoginMain2Activity extends AppCompatActivity {
             }
         });
     }
+
 }
