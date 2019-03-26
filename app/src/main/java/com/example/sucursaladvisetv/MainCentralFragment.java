@@ -53,6 +53,9 @@ public class MainCentralFragment extends Fragment {
     private int page = 0;
 
     private ArrayList<MediaObject> listaObjetos = new ArrayList<MediaObject>();
+    private ArrayList<MediaObject> listaObjetosAcomodado = new ArrayList<MediaObject>();
+    private ArrayList<MediaObject> listaImg = new ArrayList<MediaObject>();
+    private ArrayList<MediaObject> listaVid = new ArrayList<MediaObject>();
 
     //Firebase RTD
     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -84,7 +87,7 @@ public class MainCentralFragment extends Fragment {
 
 
     public void changeDelay(int duration) {
-        this.delay = duration + 10000;
+        this.delay = duration + 15000;
     }
 
     @Override
@@ -135,13 +138,23 @@ public class MainCentralFragment extends Fragment {
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
 
                         }
-                        for (int i = listaObjetos.size() - 1; i >= 0 ; i--) {
+                        for (int i = 0  ; i <= listaObjetos.size() - 1 ; i++) {
                             if (listaObjetos.get(i).getTipo().equals("video")) {
                                 String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
                                         listaObjetos.get(i).getNombre());
                                 listaObjetos.get(i).setUrl(localPath);
+                                listaVid.add(listaObjetos.get(i));
+                                Log.v("LADB", "Lista vid: " + listaVid);
+                            }else if (listaObjetos.get(i).getTipo().equals("img")){
+                                listaImg.add(listaObjetos.get(i));
+                                Log.v("LADB", "Lista img " + listaImg);
                             }
                         }
+
+                        ordenar();
+
+                        Log.v("LADB", "ListaOrdenada : " + listaObjetosAcomodado.toString());
+
                         //View Pager
                         adapter = new MainCentralAdapter(getChildFragmentManager());
 
@@ -204,6 +217,35 @@ public class MainCentralFragment extends Fragment {
 
     }
 
+    private void ordenar() {
+        int imgAdd = 0;
+        int img = 0;
+        int vid = 0;
+        listaObjetosAcomodado.add(listaImg.get(img));
+        img = img + 1;
+        listaObjetosAcomodado.add(listaImg.get(img));
+        img = img + 1;
+        while(true){
+            if (listaImg.size() > listaVid.size() + 1){
+                if (listaObjetosAcomodado.get(listaObjetosAcomodado.size()-1).getTipo().equals("img")){
+                    listaObjetosAcomodado.add(listaVid.get(vid));
+                    vid = vid + 1;
+                }else{
+                    listaObjetosAcomodado.add(listaImg.get(img));
+                    img = img + 1;
+                }
+                if (vid == listaVid.size()){
+                    listaObjetosAcomodado.addAll(listaImg.subList(img, listaImg.size()));
+                    break;
+                }
+            }else{
+                listaImg.add(listaImg.get(imgAdd));
+                imgAdd = imgAdd + 1;
+            }
+
+        }
+    }
+
     private String downloadVideosLocal(String url, String videoName) {
         // Getting the data from Storage from url
         StorageReference videoRef = storage.getReferenceFromUrl(url);
@@ -263,7 +305,6 @@ public class MainCentralFragment extends Fragment {
         // Cuenta el tamaño de las imagenes y videos
         @Override
         public int getCount() {
-
             return listaObjetos.size();
         }
 

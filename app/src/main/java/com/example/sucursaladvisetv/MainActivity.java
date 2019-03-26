@@ -27,9 +27,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private String androidDeviceId;
-    private Boolean statusTv;
     private Intent intentLogin;
-    private Intent intentMain;
     private DatabaseReference tvCodeRef;
 
     @Override

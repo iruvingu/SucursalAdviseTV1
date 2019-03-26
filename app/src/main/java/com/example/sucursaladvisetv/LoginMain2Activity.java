@@ -25,9 +25,7 @@ import java.util.Date;
 public class LoginMain2Activity extends AppCompatActivity {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private TextView codeTv;
-    private Boolean statusTv;
     private String androidDeviceId;
-    private Intent intentMain;
     private DatabaseReference tvCodeRef;
 
     @Override
