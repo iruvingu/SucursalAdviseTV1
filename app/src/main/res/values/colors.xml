@@ -4,12 +4,13 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="White">#FFFFFF</color>
+    <color name="FootBackground">#3d3d3d</color>
     <color name="FootFirst">#0C7E17</color>
     <color name="FootEnd">#09BD1A</color>
     <color name="HeadFirst">#7b920A</color>
     <color name="HeadEnd">#7b920A</color>
     <color name="FootText">#300000</color>
     <color name="Black">#000000</color>
-    <color name="Head_Red">#83140b</color>
+    <color name="Head_Red">#b92c32</color>
 
 </resources>

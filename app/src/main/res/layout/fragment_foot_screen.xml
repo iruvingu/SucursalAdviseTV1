@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_foot"
+    android:background="@color/FootBackground"
     tools:context=".FootScreenFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -20,7 +20,8 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:singleLine="true"
         android:textSize="30dp"
-        android:fontFamily="@font/roboto_bold"
+        android:fontFamily="@font/myriad_pro"
+        android:textStyle="normal|bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

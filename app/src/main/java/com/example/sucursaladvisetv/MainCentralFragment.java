@@ -140,9 +140,9 @@ public class MainCentralFragment extends Fragment {
                         }
                         for (int i = 0  ; i <= listaObjetos.size() - 1 ; i++) {
                             if (listaObjetos.get(i).getTipo().equals("video")) {
-                                String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
+                               /*String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
                                         listaObjetos.get(i).getNombre());
-                                listaObjetos.get(i).setUrl(localPath);
+                                listaObjetos.get(i).setUrl(localPath);*/
                                 listaVid.add(listaObjetos.get(i));
                                 Log.v("LADB", "Lista vid: " + listaVid);
                             }else if (listaObjetos.get(i).getTipo().equals("img")){
@@ -155,6 +155,14 @@ public class MainCentralFragment extends Fragment {
 
                         Log.v("LADB", "ListaOrdenada : " + listaObjetosAcomodado.toString());
 
+                        for(int i = 0 ; i <= listaObjetosAcomodado.size()-1; i++){
+                            if (listaObjetosAcomodado.get(i).getTipo().equals("video")) {
+                                String localPatchAc = downloadVideosLocal(listaObjetosAcomodado.get(i).getUrl(),
+                                        listaObjetosAcomodado.get(i).getNombre());
+                                listaObjetosAcomodado.get(i).setUrl(localPatchAc);
+                            }
+                        }
+
                         //View Pager
                         adapter = new MainCentralAdapter(getChildFragmentManager());
 
@@ -163,7 +171,7 @@ public class MainCentralFragment extends Fragment {
                         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                             @Override
                             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                                if (listaObjetos.get(position).getTipo().equals("video")) {
+                                if (listaObjetosAcomodado.get(position).getTipo().equals("video")) {
                                     videoFragment = (VideoFragment) adapter.getFragment(position);
                                     if (positionOffset != 0.0){
                                         videoFragment.stopVideoToFragment();
@@ -173,7 +181,7 @@ public class MainCentralFragment extends Fragment {
                                 }  else {
                                     int next = (position + 1 == adapter.getCount()) ? 0 : position + 1;
 
-                                    if (listaObjetos.get(next).getTipo().equals("video")) {
+                                    if (listaObjetosAcomodado.get(next).getTipo().equals("video")) {
                                         if(positionOffset != 0.0){
                                             videoFragment.stopVideoToFragment();
                                         }
@@ -185,7 +193,7 @@ public class MainCentralFragment extends Fragment {
                             @Override
                             public void onPageSelected(int position) {
                                 page = position;
-                                if (listaObjetos.get(position).getTipo().equals("video")) {
+                                if (listaObjetosAcomodado.get(position).getTipo().equals("video")) {
                                     Log.v("LADB", "Delay: " + delay);
                                     videoFragment = (VideoFragment) adapter.getFragment(position);
                                     videoFragment.playVideoToFragment();
@@ -299,13 +307,13 @@ public class MainCentralFragment extends Fragment {
         //overrideMethods
         @Override
         public Fragment getItem(int position) {
-            return getFragment(listaObjetos.get(position), position);
+            return getFragment(listaObjetosAcomodado.get(position), position);
         }
 
         // Cuenta el tamaño de las imagenes y videos
         @Override
         public int getCount() {
-            return listaObjetos.size();
+            return listaObjetosAcomodado.size();
         }
 
         //gral metods

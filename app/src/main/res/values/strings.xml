@@ -9,6 +9,6 @@
     <string name="bienvenida">BIENVENIDO A</string>
     <string name="inicio_sesion">Iniciar sesión en web</string>
     <string name="inicio_sesion2">Ingresa a: </string>
-    <string name="inicio_sesion3">CÓDIGO UNICO</string>
+    <string name="inicio_sesion3">Código único</string>
     <string name="code">CODE</string>
 </resources>
