@@ -11,4 +11,5 @@
     <string name="inicio_sesion2">Ingresa a: </string>
     <string name="inicio_sesion3">Código único</string>
     <string name="code">CODE</string>
+    <string name="aprobacion">Sujeto a aprobación de crédito*</string>
 </resources>

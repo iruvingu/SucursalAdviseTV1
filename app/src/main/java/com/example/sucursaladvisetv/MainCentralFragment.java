@@ -4,6 +4,7 @@ package com.example.sucursaladvisetv;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -32,6 +35,9 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static android.support.v4.view.ViewPager.SCROLL_STATE_DRAGGING;
 import static android.support.v4.view.ViewPager.SCROLL_STATE_SETTLING;
@@ -62,6 +68,12 @@ public class MainCentralFragment extends Fragment {
 
     //Firebase Storage
     FirebaseStorage storage = FirebaseStorage.getInstance();
+
+    //Firesbase Firestore
+    FirebaseFirestore fireStore = FirebaseFirestore.getInstance();
+
+    //Interface Retrofit
+    private InterfaceRetrofit interfaceRetrofit = RetrofitClass.newInstance();
 
     //Runable
     Runnable runnable = new Runnable() {
@@ -108,7 +120,7 @@ public class MainCentralFragment extends Fragment {
                 return true;
             }
         });
-
+        media();
         addlist();
 
         return root;
@@ -134,79 +146,10 @@ public class MainCentralFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     try{
-                        for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
+                        /*for (DataSnapshot objectMedia : dataSnapshot.getChildren()){
                             listaObjetos.add(objectMedia.getValue(MediaObject.class));
 
-                        }
-                        for (int i = 0  ; i <= listaObjetos.size() - 1 ; i++) {
-                            if (listaObjetos.get(i).getTipo().equals("video")) {
-                               /*String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
-                                        listaObjetos.get(i).getNombre());
-                                listaObjetos.get(i).setUrl(localPath);*/
-                                listaVid.add(listaObjetos.get(i));
-                                Log.v("LADB", "Lista vid: " + listaVid);
-                            }else if (listaObjetos.get(i).getTipo().equals("img")){
-                                listaImg.add(listaObjetos.get(i));
-                                Log.v("LADB", "Lista img " + listaImg);
-                            }
-                        }
-
-                        ordenar();
-
-                        Log.v("LADB", "ListaOrdenada : " + listaObjetosAcomodado.toString());
-
-                        for(int i = 0 ; i <= listaObjetosAcomodado.size()-1; i++){
-                            if (listaObjetosAcomodado.get(i).getTipo().equals("video")) {
-                                String localPatchAc = downloadVideosLocal(listaObjetosAcomodado.get(i).getUrl(),
-                                        listaObjetosAcomodado.get(i).getNombre());
-                                listaObjetosAcomodado.get(i).setUrl(localPatchAc);
-                            }
-                        }
-
-                        //View Pager
-                        adapter = new MainCentralAdapter(getChildFragmentManager());
-
-                        viewPager.setAdapter(adapter);
-
-                        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                            @Override
-                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                                if (listaObjetosAcomodado.get(position).getTipo().equals("video")) {
-                                    videoFragment = (VideoFragment) adapter.getFragment(position);
-                                    if (positionOffset != 0.0){
-                                        videoFragment.stopVideoToFragment();
-                                    }else{
-                                        videoFragment.playVideoToFragment();
-                                    }
-                                }  else {
-                                    int next = (position + 1 == adapter.getCount()) ? 0 : position + 1;
-
-                                    if (listaObjetosAcomodado.get(next).getTipo().equals("video")) {
-                                        if(positionOffset != 0.0){
-                                            videoFragment.stopVideoToFragment();
-                                        }
-                                    }
-                                    delay = 20000;
-                                }
-                            }
-
-                            @Override
-                            public void onPageSelected(int position) {
-                                page = position;
-                                if (listaObjetosAcomodado.get(position).getTipo().equals("video")) {
-                                    Log.v("LADB", "Delay: " + delay);
-                                    videoFragment = (VideoFragment) adapter.getFragment(position);
-                                    videoFragment.playVideoToFragment();
-                                } else {
-                                    delay = 20000;
-                                }
-                            }
-
-                            @Override
-                            public void onPageScrollStateChanged(int state) {
-                            }
-                        });
-
+                        }*/
 
                     }catch(Exception e){
                         Log.d("Error", "Error: No existen datos");
@@ -225,36 +168,152 @@ public class MainCentralFragment extends Fragment {
 
     }
 
-    private void ordenar() {
+    //Servicio Retrofit download media
+    private void media() {
+
+
+        //Servicio Retrofit download media
+        String androidDeviceId = Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
+        Call<Response> responseMediaCall = interfaceRetrofit
+                .getMultimediaService(androidDeviceId);
+        responseMediaCall.enqueue(new Callback<Response>() {
+            @Override
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                switch (response.code()){
+                    case 200:
+                        //Log.v("LADB", "Servicio chido media "+ response.body().toString());
+                        Response media = response.body();
+                        //Log.v("LADB", "Media: " + media.getResult().get(0));
+                        try {
+                            for (ResultItem datos : media.getResult()) {
+                                MediaObject object = new MediaObject();
+                                object.setTipo((String) datos.getData());
+                                object.setUrl((String) datos.getUrl());
+                                listaObjetos.add(object);
+                            }
+                            //Log.v("LADB", "Lista: " + listaObjetos.size());
+                            //Log.v("LADB", "Listasdfsdf: " + listaObjetos.toString());
+                        }catch (Exception e){
+                            Toast.makeText(getContext(),"Sin datos", Toast.LENGTH_LONG).show();
+                        }
+                        break;
+                }
+
+
+                for (int i = 0  ; i <= listaObjetos.size() - 1 ; i++) {
+                    if (listaObjetos.get(i).getTipo().equals("video")) {
+                               /*String localPath = downloadVideosLocal(listaObjetos.get(i).getUrl(),
+                                        listaObjetos.get(i).getNombre());
+                                listaObjetos.get(i).setUrl(localPath);*/
+                        listaVid.add(listaObjetos.get(i));
+                        //Log.v("LADB", "Lista vid: " + listaVid);
+                    }else if (listaObjetos.get(i).getTipo().equals("image")){
+                        listaImg.add(listaObjetos.get(i));
+                        //Log.v("LADB", "Lista img " + listaImg);
+                    }
+                }
+
+                order();
+
+                //Log.v("LADB", "ListaOrdenada : " + listaObjetosAcomodado.toString());
+
+               /* for(int i = 0 ; i <= listaObjetosAcomodado.size()-1; i++){
+                    if (listaObjetosAcomodado.get(i).getTipo().equals("video")) {
+                        //String localPatchAc = downloadVideosLocal(listaObjetosAcomodado.get(i).getUrl());
+                        listaObjetosAcomodado.get(i).setUrl(lista);
+                    }
+                }*/
+
+                //View Pager
+                adapter = new MainCentralAdapter(getChildFragmentManager());
+
+                viewPager.setAdapter(adapter);
+
+                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                        if (listaObjetosAcomodado.get(position).getTipo().equals("video")) {
+                            videoFragment = (VideoFragment) adapter.getFragment(position);
+                            if (positionOffset != 0.0){
+                                videoFragment.stopVideoToFragment();
+                            }else{
+                                videoFragment.playVideoToFragment();
+                            }
+                        }  else {
+                            int next = (position + 1 == adapter.getCount()) ? 0 : position + 1;
+
+                            if (listaObjetosAcomodado.get(next).getTipo().equals("video")) {
+                                if(positionOffset != 0.0){
+                                    videoFragment.stopVideoToFragment();
+                                }
+                            }
+                            delay = 20000;
+                        }
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+                        page = position;
+                        if (listaObjetosAcomodado.get(position).getTipo().equals("video")) {
+                            Log.v("LADB", "Delay: " + delay);
+                            videoFragment = (VideoFragment) adapter.getFragment(position);
+                            videoFragment.playVideoToFragment();
+                        } else {
+                            delay = 20000;
+                        }
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
+
+            }
+        });
+    }
+
+
+    private void order() {
         int imgAdd = 0;
         int img = 0;
         int vid = 0;
-        listaObjetosAcomodado.add(listaImg.get(img));
-        img = img + 1;
-        listaObjetosAcomodado.add(listaImg.get(img));
-        img = img + 1;
-        while(true){
-            if (listaImg.size() > listaVid.size() + 1){
-                if (listaObjetosAcomodado.get(listaObjetosAcomodado.size()-1).getTipo().equals("img")){
-                    listaObjetosAcomodado.add(listaVid.get(vid));
-                    vid = vid + 1;
+        if(listaImg.size() != 0 && listaVid.size() != 0){
+            listaObjetosAcomodado.add(listaImg.get(img));
+            img = img + 1;
+            /*listaObjetosAcomodado.add(listaImg.get(img));
+            img = img + 1;*/
+            while(true){
+                if (listaImg.size() > listaVid.size() + 1){
+                    if (listaObjetosAcomodado.get(listaObjetosAcomodado.size()-1).getTipo().equals("image")&& listaObjetosAcomodado.size() >= 2){
+                        listaObjetosAcomodado.add(listaVid.get(vid));
+                        vid = vid + 1;
+                    }else if (listaImg.size()-1 == 0){
+                        listaImg.add(listaImg.get(0));
+                    }else{
+                        listaObjetosAcomodado.add(listaImg.get(img));
+                        img = img + 1;
+                    }
+                    if (vid == listaVid.size()){
+                        listaObjetosAcomodado.addAll(listaImg.subList(img, listaImg.size()));
+                        break;
+                    }
                 }else{
-                    listaObjetosAcomodado.add(listaImg.get(img));
-                    img = img + 1;
+                    listaImg.add(listaImg.get(imgAdd));
+                    imgAdd = imgAdd + 1;
                 }
-                if (vid == listaVid.size()){
-                    listaObjetosAcomodado.addAll(listaImg.subList(img, listaImg.size()));
-                    break;
-                }
-            }else{
-                listaImg.add(listaImg.get(imgAdd));
-                imgAdd = imgAdd + 1;
             }
-
+        }else if (listaImg != null){
+            listaObjetosAcomodado.add(listaImg.get(img));
         }
     }
 
-    private String downloadVideosLocal(String url, String videoName) {
+    private String downloadVideosLocal(String url) {
         // Getting the data from Storage from url
         StorageReference videoRef = storage.getReferenceFromUrl(url);
 
@@ -320,7 +379,7 @@ public class MainCentralFragment extends Fragment {
         private Fragment getFragment(MediaObject mediaObject, int position){
             Fragment fragment = fragments.get(position);
             if(fragment == null){
-                if (mediaObject.getTipo().equals("img")) {
+                if (mediaObject.getTipo().equals("image")) {
                     Bundle bundle = new Bundle();
                     bundle.putString("uri_image", mediaObject.getUrl());
                     fragment = ImageFragment.newInstance(bundle);

@@ -5,7 +5,7 @@
     android:id="@+id/loginLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/baner_main_central_min"
+    android:background="@drawable/wallpaper_inicio_nuevo"
     tools:context=".LoginMain2Activity">
 
     <TextView
