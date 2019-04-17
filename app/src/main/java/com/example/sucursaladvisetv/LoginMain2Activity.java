@@ -1,5 +1,6 @@
 package com.example.sucursaladvisetv;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Handler;
 import android.provider.Settings;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.opentok.android.Session;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -42,7 +44,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class LoginMain2Activity extends AppCompatActivity {
+
+    private static String LOG_TAG = LoginMain2Activity.class.getSimpleName();
+    private static final int RC_SETTINGS = 123;
+    private static final int RC_VIDEO_APP_PERM = 124;
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -79,6 +88,7 @@ public class LoginMain2Activity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
         Log.v("Etiqueta de Id Divece", "Android ID: " + androidDeviceId);
         codeTv.setText(androidDeviceId);
+        requestPermissions();
 
     }
 
@@ -93,6 +103,24 @@ public class LoginMain2Activity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         handler.removeCallbacks(runnable);
+    }
+
+    //Permisos chat
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(RC_SETTINGS)
+    private void requestPermissions(){
+        String[] perm = {Manifest.permission.INTERNET, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+        if(EasyPermissions.hasPermissions(this, perm)){
+
+        }else{
+             EasyPermissions.requestPermissions(this, "Esta aplicación requiere acceso a su Cámara y Micrófono", RC_SETTINGS, perm);
+        }
     }
 
     private void nextScreen() {
@@ -128,24 +156,6 @@ public class LoginMain2Activity extends AppCompatActivity {
 
         //FireStore
         DocumentReference tvcodeStore = firebaseFirestore.collection("screens").document(androidDeviceId);
-        /*tvcodeStore.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Intent intent = new Intent(LoginMain2Activity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Log.v("No existe pantalla", "No existe la pantalla");
-                    }
-                } else {
-                    Log.v("No existe pantalla", "No existe la pantalla");
-                }
-            }
-        });*/
-
         tvcodeStore.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -164,29 +174,6 @@ public class LoginMain2Activity extends AppCompatActivity {
                 }
             }
         });
-        /*tvcodeStore.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w("LADB", "Listen failed.", e);
-                    return;
-                }
-
-                if (documentSnapshot != null && documentSnapshot.exists()) {
-                    //Log.d("LADB", "Current data: " + documentSnapshot.getData());
-                    //Log.d("LADB", "Current data1: " + documentSnapshot.get("active"));
-                    String refreshed = String.valueOf(documentSnapshot.get("refreshed"));
-                    if (refreshed != documentSnapshot.get("refreshed")) {
-                        Intent intent = new Intent(LoginMain2Activity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-               } else {
-                    Toast.makeText(getApplicationContext(), "No existe la pantalla", Toast.LENGTH_LONG).show();
-                    Log.d("LADB", "Current data: null");
-                }
-            }
-        });*/
     }
 
 }
